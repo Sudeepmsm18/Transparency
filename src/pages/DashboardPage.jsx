@@ -57,21 +57,6 @@ export function DashboardPage() {
     { title: "Patrols Done", value: `${stats.patrolsCompleted}/${stats.totalPatrols}`, icon: ShieldCheck, color: "text-green-600", bg: "bg-green-100" },
   ];
 
-  const visitorData = [
-    { name: 'Mon', visitors: 40 },
-    { name: 'Tue', visitors: 30 },
-    { name: 'Wed', visitors: 45 },
-    { name: 'Thu', visitors: 50 },
-    { name: 'Fri', visitors: 65 },
-    { name: 'Sat', visitors: 85 },
-    { name: 'Sun', visitors: 90 },
-  ];
-
-  const cctvData = [
-    { name: 'Working', value: stats.totalCameras - stats.camerasNotWorking, color: '#22c55e' },
-    { name: 'Faulty', value: stats.camerasNotWorking, color: '#ef4444' },
-  ];
-
   const getStatusBadge = (status) => {
     switch (status) {
       case "Open": return <Badge variant="danger">Open</Badge>;
@@ -113,7 +98,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={visitorData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={stats.visitorTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
@@ -133,7 +118,7 @@ export function DashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={cctvData}
+                    data={stats.cctvTrend}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -141,7 +126,7 @@ export function DashboardPage() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {cctvData.map((entry, index) => (
+                    {stats.cctvTrend.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -150,7 +135,7 @@ export function DashboardPage() {
               </ResponsiveContainer>
             </div>
             <div className="flex space-x-4 mt-2">
-              {cctvData.map((entry, i) => (
+              {stats.cctvTrend.map((entry, i) => (
                 <div key={i} className="flex items-center space-x-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>
                   <span className="text-sm text-gray-600">{entry.name}: {entry.value}</span>

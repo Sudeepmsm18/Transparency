@@ -34,6 +34,11 @@ export function CctvManagementPage() {
     setFormData({ name: '', phase: 'p1', location: '', type: 'Bullet' });
   };
 
+  const handleUpdateStatus = (id, newStatus) => {
+    localDb.updateCamera(id, { status: newStatus });
+    setCameras(localDb.getCameras());
+  };
+
   const filteredCameras = cameras.filter((cam) => {
     const matchesSearch = cam.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           cam.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -176,7 +181,16 @@ export function CctvManagementPage() {
                     <td className="py-4 px-6">
                       {getStatusBadge(cam.status)}
                     </td>
-                    <td className="py-4 px-6 text-right">
+                    <td className="py-4 px-6 text-right whitespace-nowrap">
+                      <select 
+                        className="text-sm border border-gray-300 rounded-md px-2 py-1 mr-2"
+                        onChange={(e) => handleUpdateStatus(cam.id, e.target.value)}
+                        value={cam.status}
+                      >
+                        <option value="Working">Working</option>
+                        <option value="Not Working">Not Working (Faulty)</option>
+                        <option value="Under Maintenance">Maintenance</option>
+                      </select>
                       <Button variant="ghost" size="sm">Details</Button>
                     </td>
                   </tr>

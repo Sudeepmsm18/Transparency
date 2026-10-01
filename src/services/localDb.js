@@ -50,6 +50,14 @@ export const localDb = {
     localDb.set('cameras', [newCamera, ...cameras]);
     return newCamera;
   },
+  updateCamera: (id, updates) => {
+    const cameras = localDb.get('cameras');
+    const index = cameras.findIndex(c => c.id === id);
+    if (index > -1) {
+      cameras[index] = { ...cameras[index], ...updates };
+      localDb.set('cameras', cameras);
+    }
+  },
 
   getSecurityIssues: () => localDb.get('securityIssues'),
   addSecurityIssue: (issue) => {
@@ -114,6 +122,40 @@ export const localDb = {
     const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
     const pendingPayments = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + Number(p.amount), 0);
 
+    // Calculate dynamic 7-day visitor trend
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const visitorTrend = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayName = i === 0 ? 'Today' : days[d.getDay()];
+      
+      const count = visitors.filter(v => {
+        const vDate = v.date || todayStr; // Assume missing date is today
+        return vDate === dateStr;
+      }).length;
+      
+      visitorTrend.push({ name: dayName, visitors: count });
+    }
+
+    // Calculate dynamic CCTV data
+    let workingCameras = 0;
+    
+    if (cameras.length > 0) {
+      workingCameras = cameras.length - faultyCameras;
+    }
+    
+    const cctvTrend = cameras.length === 0 
+      ? [{ name: 'No Cameras', value: 1, color: '#e5e7eb' }]
+      : [
+          { name: 'Working', value: workingCameras, color: '#22c55e' },
+          { name: 'Faulty', value: faultyCameras, color: '#ef4444' },
+        ];
+
     return {
       visitorsToday,
       vehiclesToday: 0, // Placeholder until vehicles module is built
@@ -126,7 +168,9 @@ export const localDb = {
       vacantHouses: 0,
       totalCollected,
       totalExpenses,
-      pendingPayments
+      pendingPayments,
+      visitorTrend,
+      cctvTrend
     };
   }
 };

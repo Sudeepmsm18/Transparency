@@ -229,6 +229,7 @@ export function SecurityPage() {
                 <option value="Trespassing">Trespassing</option>
                 <option value="Vandalism">Vandalism</option>
                 <option value="Infrastructure Damage">Infrastructure Damage</option>
+                <option value="CCTV / Camera Fault">CCTV / Camera Fault</option>
               </select>
             </div>
             <div className="space-y-1">
