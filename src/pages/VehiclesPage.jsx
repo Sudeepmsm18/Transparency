@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Plus, Car } from "lucide-react";
+import { Plus, Car, Trash2 } from "lucide-react";
 
 export function VehiclesPage() {
   const [vehicles, setVehicles] = useState([]);
@@ -21,6 +21,13 @@ export function VehiclesPage() {
     setVehicles(localDb.getVehicles());
     setIsModalOpen(false);
     setFormData({ number: '', owner: '', type: 'Car', houseId: '' });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this vehicle?")) {
+      localDb.deleteVehicle(id);
+      setVehicles(localDb.getVehicles());
+    }
   };
 
   return (
@@ -46,6 +53,7 @@ export function VehiclesPage() {
               <th className="py-3 px-6 text-xs text-gray-500">Owner</th>
               <th className="py-3 px-6 text-xs text-gray-500">House / Unit</th>
               <th className="py-3 px-6 text-xs text-gray-500">Type</th>
+              <th className="py-3 px-6 text-xs text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -55,9 +63,18 @@ export function VehiclesPage() {
                 <td className="py-3 px-6 text-sm">{v.owner}</td>
                 <td className="py-3 px-6 text-sm">{v.houseId}</td>
                 <td className="py-3 px-6 text-sm"><Badge>{v.type}</Badge></td>
+                <td className="py-3 px-6 text-right">
+                  <button 
+                    onClick={() => handleDelete(v.id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                    title="Delete Vehicle"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
               </tr>
             ))}
-            {vehicles.length === 0 && <tr><td colSpan="4" className="text-center py-6 text-gray-500">No vehicles registered yet.</td></tr>}
+            {vehicles.length === 0 && <tr><td colSpan="5" className="text-center py-6 text-gray-500">No vehicles registered yet.</td></tr>}
           </tbody>
         </table>
       </Card>

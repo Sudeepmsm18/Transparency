@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Plus, Users } from "lucide-react";
+import { Plus, Users, Trash2 } from "lucide-react";
 
 export function AssociationPage() {
   const [members, setMembers] = useState([]);
@@ -23,6 +23,13 @@ export function AssociationPage() {
     setFormData({ name: '', role: 'President', contact: '' });
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to remove this member?")) {
+      localDb.deleteCommitteeMember(id);
+      setMembers(localDb.getCommittee());
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -35,7 +42,14 @@ export function AssociationPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {members.map(member => (
-          <Card key={member.id} className="text-center p-6 flex flex-col items-center">
+          <Card key={member.id} className="text-center p-6 flex flex-col items-center relative group">
+             <button 
+               onClick={() => handleDelete(member.id)}
+               className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
+               title="Remove Member"
+             >
+               <Trash2 className="w-4 h-4" />
+             </button>
              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
                <Users className="w-8 h-8" />
              </div>

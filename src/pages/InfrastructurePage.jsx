@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Plus, Activity, Settings } from "lucide-react";
+import { Plus, Activity, Settings, Trash2 } from "lucide-react";
 
 export function InfrastructurePage() {
   const [items, setItems] = useState([]);
@@ -26,6 +26,13 @@ export function InfrastructurePage() {
   const handleUpdateStatus = (id, newStatus) => {
     localDb.updateInfrastructure(id, { status: newStatus });
     setItems(localDb.getInfrastructure());
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this asset?")) {
+      localDb.deleteInfrastructure(id);
+      setItems(localDb.getInfrastructure());
+    }
   };
 
   return (
@@ -66,15 +73,22 @@ export function InfrastructurePage() {
                 <td className="py-3 px-6 text-sm">
                   <Badge variant={item.status === 'Working' ? 'success' : 'danger'}>{item.status}</Badge>
                 </td>
-                <td className="py-3 px-6 text-right">
+                <td className="py-3 px-6 text-right whitespace-nowrap">
                   <select 
-                    className="text-sm border rounded p-1"
+                    className="text-sm border rounded p-1 mr-2"
                     value={item.status}
                     onChange={(e) => handleUpdateStatus(item.id, e.target.value)}
                   >
                     <option value="Working">Working</option>
                     <option value="Faulty">Faulty</option>
                   </select>
+                  <button 
+                    onClick={() => handleDelete(item.id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors inline-flex align-middle"
+                    title="Delete Asset"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </td>
               </tr>
             ))}

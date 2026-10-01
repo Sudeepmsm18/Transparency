@@ -30,6 +30,10 @@ initializeDb();
 export const localDb = {
   get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
   set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
+  deleteItem: (key, id) => {
+    const items = localDb.get(key);
+    localDb.set(key, items.filter(item => item.id !== id));
+  },
 
   // Specific entity helpers
   getVisitors: () => localDb.get('visitors'),
@@ -63,6 +67,7 @@ export const localDb = {
       localDb.set('cameras', cameras);
     }
   },
+  deleteCamera: (id) => localDb.deleteItem('cameras', id),
 
   getSecurityIssues: () => localDb.get('securityIssues'),
   addSecurityIssue: (issue) => {
@@ -79,6 +84,7 @@ export const localDb = {
       localDb.set('securityIssues', issues);
     }
   },
+  deleteSecurityIssue: (id) => localDb.deleteItem('securityIssues', id),
 
   getPayments: () => localDb.get('payments'),
   addPayment: (payment) => {
@@ -127,6 +133,7 @@ export const localDb = {
       localDb.set('infrastructure', items);
     }
   },
+  deleteInfrastructure: (id) => localDb.deleteItem('infrastructure', id),
 
   getVehicles: () => localDb.get('vehicles'),
   addVehicle: (vehicle) => {
@@ -135,6 +142,7 @@ export const localDb = {
     localDb.set('vehicles', [newVehicle, ...vehicles]);
     return newVehicle;
   },
+  deleteVehicle: (id) => localDb.deleteItem('vehicles', id),
 
   getPatrols: () => localDb.get('patrols'),
   addPatrol: (patrol) => {
@@ -143,6 +151,7 @@ export const localDb = {
     localDb.set('patrols', [newPatrol, ...patrols]);
     return newPatrol;
   },
+  deletePatrol: (id) => localDb.deleteItem('patrols', id),
 
   getCommittee: () => localDb.get('committee'),
   addCommitteeMember: (member) => {
@@ -151,6 +160,7 @@ export const localDb = {
     localDb.set('committee', [newMember, ...members]);
     return newMember;
   },
+  deleteCommitteeMember: (id) => localDb.deleteItem('committee', id),
 
   getServiceProviders: () => localDb.get('serviceProviders'),
   addServiceProvider: (provider) => {
@@ -159,6 +169,7 @@ export const localDb = {
     localDb.set('serviceProviders', [newProvider, ...providers]);
     return newProvider;
   },
+  deleteServiceProvider: (id) => localDb.deleteItem('serviceProviders', id),
 
   getDashboardStats: () => {
     const visitors = localDb.get('visitors');

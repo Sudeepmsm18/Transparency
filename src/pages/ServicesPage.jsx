@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 export function ServicesPage() {
   const [providers, setProviders] = useState([]);
@@ -21,6 +21,13 @@ export function ServicesPage() {
     setProviders(localDb.getServiceProviders());
     setIsModalOpen(false);
     setFormData({ name: '', serviceType: 'Maid', contact: '' });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to remove this provider?")) {
+      localDb.deleteServiceProvider(id);
+      setProviders(localDb.getServiceProviders());
+    }
   };
 
   return (
@@ -41,6 +48,7 @@ export function ServicesPage() {
               <th className="py-3 px-6 text-xs text-gray-500">Name</th>
               <th className="py-3 px-6 text-xs text-gray-500">Service Type</th>
               <th className="py-3 px-6 text-xs text-gray-500">Contact</th>
+              <th className="py-3 px-6 text-xs text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -49,9 +57,18 @@ export function ServicesPage() {
                 <td className="py-3 px-6 font-medium">{p.name}</td>
                 <td className="py-3 px-6 text-sm"><Badge>{p.serviceType}</Badge></td>
                 <td className="py-3 px-6 text-sm">{p.contact}</td>
+                <td className="py-3 px-6 text-right">
+                  <button 
+                    onClick={() => handleDelete(p.id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                    title="Remove Provider"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
               </tr>
             ))}
-            {providers.length === 0 && <tr><td colSpan="3" className="text-center py-6 text-gray-500">No providers added yet.</td></tr>}
+            {providers.length === 0 && <tr><td colSpan="4" className="text-center py-6 text-gray-500">No providers added yet.</td></tr>}
           </tbody>
         </table>
       </Card>

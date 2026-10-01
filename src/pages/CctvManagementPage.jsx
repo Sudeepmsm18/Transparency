@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Search, Plus, Video, Settings, Activity } from "lucide-react";
+import { Search, Plus, Video, Settings, Activity, Trash2 } from "lucide-react";
 
 export function CctvManagementPage() {
   const [cameras, setCameras] = useState([]);
@@ -37,6 +37,13 @@ export function CctvManagementPage() {
   const handleUpdateStatus = (id, newStatus) => {
     localDb.updateCamera(id, { status: newStatus });
     setCameras(localDb.getCameras());
+  };
+
+  const handleDeleteCamera = (id) => {
+    if (window.confirm("Are you sure you want to delete this camera?")) {
+      localDb.deleteCamera(id);
+      setCameras(localDb.getCameras());
+    }
   };
 
   const filteredCameras = cameras.filter((cam) => {
@@ -191,6 +198,13 @@ export function CctvManagementPage() {
                         <option value="Not Working">Not Working (Faulty)</option>
                         <option value="Under Maintenance">Maintenance</option>
                       </select>
+                      <button 
+                        onClick={() => handleDeleteCamera(cam.id)}
+                        className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors mr-2"
+                        title="Delete Camera"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                       <Button variant="ghost" size="sm">Details</Button>
                     </td>
                   </tr>
