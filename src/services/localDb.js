@@ -15,6 +15,11 @@ const initializeDb = () => {
     localStorage.setItem('payments', JSON.stringify([]));
     localStorage.setItem('expenses', JSON.stringify([]));
     localStorage.setItem('announcements', JSON.stringify([]));
+    localStorage.setItem('infrastructure', JSON.stringify([]));
+    localStorage.setItem('vehicles', JSON.stringify([]));
+    localStorage.setItem('patrols', JSON.stringify([]));
+    localStorage.setItem('committee', JSON.stringify([]));
+    localStorage.setItem('serviceProviders', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
     localStorage.setItem('securecomm_demo_v2_initialized', 'true');
   }
@@ -107,12 +112,62 @@ export const localDb = {
     return newAnnouncement;
   },
 
+  getInfrastructure: () => localDb.get('infrastructure'),
+  addInfrastructure: (item) => {
+    const items = localDb.get('infrastructure');
+    const newItem = { ...item, id: `INF-${100 + items.length + 1}` };
+    localDb.set('infrastructure', [newItem, ...items]);
+    return newItem;
+  },
+  updateInfrastructure: (id, updates) => {
+    const items = localDb.get('infrastructure');
+    const index = items.findIndex(i => i.id === id);
+    if (index > -1) {
+      items[index] = { ...items[index], ...updates };
+      localDb.set('infrastructure', items);
+    }
+  },
+
+  getVehicles: () => localDb.get('vehicles'),
+  addVehicle: (vehicle) => {
+    const vehicles = localDb.get('vehicles');
+    const newVehicle = { ...vehicle, id: `VEH-${1000 + vehicles.length + 1}`, date: new Date().toISOString().split('T')[0] };
+    localDb.set('vehicles', [newVehicle, ...vehicles]);
+    return newVehicle;
+  },
+
+  getPatrols: () => localDb.get('patrols'),
+  addPatrol: (patrol) => {
+    const patrols = localDb.get('patrols');
+    const newPatrol = { ...patrol, id: `PAT-${1000 + patrols.length + 1}`, date: new Date().toISOString().split('T')[0] };
+    localDb.set('patrols', [newPatrol, ...patrols]);
+    return newPatrol;
+  },
+
+  getCommittee: () => localDb.get('committee'),
+  addCommitteeMember: (member) => {
+    const members = localDb.get('committee');
+    const newMember = { ...member, id: `COM-${100 + members.length + 1}` };
+    localDb.set('committee', [newMember, ...members]);
+    return newMember;
+  },
+
+  getServiceProviders: () => localDb.get('serviceProviders'),
+  addServiceProvider: (provider) => {
+    const providers = localDb.get('serviceProviders');
+    const newProvider = { ...provider, id: `SRV-${100 + providers.length + 1}` };
+    localDb.set('serviceProviders', [newProvider, ...providers]);
+    return newProvider;
+  },
+
   getDashboardStats: () => {
     const visitors = localDb.get('visitors');
     const cameras = localDb.get('cameras');
     const issues = localDb.get('securityIssues');
     const payments = localDb.get('payments');
     const expenses = localDb.get('expenses');
+    const vehicles = localDb.get('vehicles');
+    const patrols = localDb.get('patrols');
     
     const activeIssues = issues.filter(i => i.status === "Open" || i.status === "In Progress").length;
     const faultyCameras = cameras.filter(c => c.status === "Not Working").length;
@@ -155,16 +210,18 @@ export const localDb = {
           { name: 'Working', value: workingCameras, color: '#22c55e' },
           { name: 'Faulty', value: faultyCameras, color: '#ef4444' },
         ];
+        
+    const patrolsCompleted = patrols.filter(p => p.status === 'Completed').length;
 
     return {
       visitorsToday,
-      vehiclesToday: 0, // Placeholder until vehicles module is built
+      vehiclesToday: vehicles.length, // Showing registered vehicles as 'Vehicles Today'
       activeSecurityIssues: activeIssues,
       totalCameras: cameras.length,
       camerasNotWorking: faultyCameras,
       streetLightsNotWorking: 0,
-      patrolsCompleted: 0,
-      totalPatrols: 0,
+      patrolsCompleted: patrolsCompleted,
+      totalPatrols: patrols.length,
       vacantHouses: 0,
       totalCollected,
       totalExpenses,

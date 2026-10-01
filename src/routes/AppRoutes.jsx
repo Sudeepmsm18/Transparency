@@ -7,12 +7,13 @@ import { SecurityPage } from "../pages/SecurityPage";
 import { PaymentsPage } from "../pages/PaymentsPage";
 import { ExpensesPage } from "../pages/ExpensesPage";
 import { AnnouncementsPage } from "../pages/AnnouncementsPage";
-import { 
-  InfrastructurePage, PatrolsPage, 
-  VehiclesPage, AssociationPage, 
-  ServicesPage, 
-  ReportsPage, SettingsPage 
-} from "../pages/Stubs";
+import { InfrastructurePage } from "../pages/InfrastructurePage";
+import { VehiclesPage } from "../pages/VehiclesPage";
+import { PatrolsPage } from "../pages/PatrolsPage";
+import { AssociationPage } from "../pages/AssociationPage";
+import { ServicesPage } from "../pages/ServicesPage";
+import { ReportsPage } from "../pages/ReportsPage";
+import { SettingsPage } from "../pages/SettingsPage";
 
 export function AppRoutes() {
   return (
