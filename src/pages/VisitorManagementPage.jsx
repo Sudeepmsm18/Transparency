@@ -1,0 +1,256 @@
+import { useState, useEffect } from "react";
+import { localDb } from "../services/localDb";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
+import { Badge } from "../components/common/Badge";
+import { Button } from "../components/common/Button";
+import { Modal } from "../components/common/Modal";
+import { useToast } from "../context/ToastContext";
+import { Search, Plus, Users, UserCheck, UserX, Clock, Phone, Car, Home } from "lucide-react";
+
+export function VisitorManagementPage() {
+  const [visitors, setVisitors] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addToast } = useToast();
+  
+  const [formData, setFormData] = useState({
+    name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main Gate'
+  });
+
+  useEffect(() => {
+    setVisitors(localDb.getVisitors());
+  }, []);
+
+  const handleAddVisitor = (e) => {
+    e.preventDefault();
+    const newVisitor = {
+      ...formData,
+      entryTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      exitTime: null,
+      status: 'Inside'
+    };
+    localDb.addVisitor(newVisitor);
+    setVisitors(localDb.getVisitors());
+    setIsModalOpen(false);
+    
+    // Trigger WhatsApp notification popup
+    addToast(`WhatsApp notification sent to Host (${formData.hostHouse}) regarding arrival of ${formData.name}.`, 'whatsapp');
+
+    setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main Gate' });
+  };
+
+  const handleMarkExit = (id) => {
+    localDb.updateVisitor(id, { 
+      status: 'Exited', 
+      exitTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    });
+    setVisitors(localDb.getVisitors());
+  };
+
+  const filteredVisitors = visitors.filter((v) => {
+    const matchesSearch = v.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          v.hostHouse.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          v.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || v.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "Inside": return <Badge variant="warning">Inside</Badge>;
+      case "Exited": return <Badge variant="success">Exited</Badge>;
+      case "Denied": return <Badge variant="danger">Denied</Badge>;
+      default: return <Badge>{status}</Badge>;
+    }
+  };
+
+  const insideCount = visitors.filter(v => v.status === "Inside").length;
+  const exitedCount = visitors.filter(v => v.status === "Exited").length;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Visitor Management</h2>
+          <p className="text-gray-500 mt-1">Track and manage visitors entering the community</p>
+        </div>
+        <div className="flex space-x-2 w-full sm:w-auto">
+          <Button variant="secondary">Pre-approve</Button>
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Entry</Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4 flex items-center space-x-4">
+            <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
+              <Users className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 font-medium">Total Visitors</p>
+              <h3 className="text-2xl font-bold text-gray-900">{visitors.length}</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center space-x-4">
+            <div className="p-3 bg-orange-100 rounded-lg text-orange-600">
+              <UserCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 font-medium">Currently Inside</p>
+              <h3 className="text-2xl font-bold text-gray-900">{insideCount}</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center space-x-4">
+            <div className="p-3 bg-green-100 rounded-lg text-green-600">
+              <UserX className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 font-medium">Exited</p>
+              <h3 className="text-2xl font-bold text-gray-900">{exitedCount}</h3>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-4">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+            <CardTitle>Visitor Logs</CardTitle>
+            <div className="flex space-x-2 w-full md:w-auto">
+              <div className="relative w-full md:w-72">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+                <input 
+                  type="text"
+                  placeholder="Search by name, house..."
+                  className="pl-9 pr-4 py-2 w-full border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <select 
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="All">All Status</option>
+                <option value="Inside">Inside</option>
+                <option value="Exited">Exited</option>
+              </select>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <div className="divide-y divide-gray-200">
+          {filteredVisitors.map((v) => (
+            <div key={v.id} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <div className="flex items-start space-x-4">
+                  <div className="hidden sm:flex h-12 w-12 rounded-full bg-gray-100 items-center justify-center text-gray-500">
+                    <UserCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-base font-semibold text-gray-900">{v.name}</h4>
+                      {getStatusBadge(v.status)}
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center text-sm text-gray-500 space-x-4 gap-y-2">
+                      <div className="flex items-center">
+                        <Phone className="w-3.5 h-3.5 mr-1" /> {v.mobile}
+                      </div>
+                      <div className="flex items-center">
+                        <Home className="w-3.5 h-3.5 mr-1" /> Host: {v.hostHouse}
+                      </div>
+                      <div className="flex items-center">
+                        <Badge variant="default" className="text-[10px]">{v.purpose}</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 sm:mt-0 flex flex-col sm:items-end text-sm text-gray-500">
+                  <div className="flex items-center mb-1">
+                    <Clock className="w-3.5 h-3.5 mr-1.5" /> 
+                    <span>In: <span className="font-medium text-gray-900">{v.entryTime}</span></span>
+                    {v.exitTime && (
+                      <span className="ml-2 border-l border-gray-300 pl-2">Out: <span className="font-medium text-gray-900">{v.exitTime}</span></span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-xs">
+                    <span className="bg-gray-100 px-2 py-0.5 rounded mr-2">{v.gate}</span>
+                    {v.vehicleNumber && (
+                      <span className="flex items-center"><Car className="w-3 h-3 mr-1" /> {v.vehicleNumber}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {v.status === "Inside" && (
+                <div className="mt-4 flex justify-end space-x-2">
+                  <Button variant="primary" size="sm" onClick={() => handleMarkExit(v.id)}>Mark Exit</Button>
+                </div>
+              )}
+            </div>
+          ))}
+          {filteredVisitors.length === 0 && (
+            <div className="py-12 text-center text-gray-500">
+              No visitors found matching your criteria.
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register New Visitor">
+        <form onSubmit={handleAddVisitor} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Visitor Name *</label>
+              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Mobile Number *</label>
+              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Host House *</label>
+              <input required type="text" placeholder="e.g. P1-104" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.hostHouse} onChange={e => setFormData({...formData, hostHouse: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Purpose</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.purpose} onChange={e => setFormData({...formData, purpose: e.target.value})}>
+                <option value="Guest">Guest</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Service">Service</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Vehicle Number</label>
+              <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.vehicleNumber} onChange={e => setFormData({...formData, vehicleNumber: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Entry Gate</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.gate} onChange={e => setFormData({...formData, gate: e.target.value})}>
+                <option value="Main Gate">Main Gate</option>
+                <option value="Gate 2">Gate 2</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+            <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+            <Button type="submit">Register Entry</Button>
+          </div>
+        </form>
+      </Modal>
+    </div>
+  );
+}
+
