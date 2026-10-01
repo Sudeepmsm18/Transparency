@@ -30,7 +30,7 @@ initializeDb();
 export const localDb = {
   get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
   set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
-  
+
   // Specific entity helpers
   getVisitors: () => localDb.get('visitors'),
   addVisitor: (visitor) => {
@@ -168,7 +168,7 @@ export const localDb = {
     const expenses = localDb.get('expenses');
     const vehicles = localDb.get('vehicles');
     const patrols = localDb.get('patrols');
-    
+
     const activeIssues = issues.filter(i => i.status === "Open" || i.status === "In Progress").length;
     const faultyCameras = cameras.filter(c => c.status === "Not Working").length;
     const visitorsToday = visitors.filter(v => v.status === "Inside" || v.status === "Exited").length;
@@ -182,35 +182,35 @@ export const localDb = {
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
     const visitorTrend = [];
-    
+
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
       const dayName = i === 0 ? 'Today' : days[d.getDay()];
-      
+
       const count = visitors.filter(v => {
         const vDate = v.date || todayStr; // Assume missing date is today
         return vDate === dateStr;
       }).length;
-      
+
       visitorTrend.push({ name: dayName, visitors: count });
     }
 
     // Calculate dynamic CCTV data
     let workingCameras = 0;
-    
+
     if (cameras.length > 0) {
       workingCameras = cameras.length - faultyCameras;
     }
-    
-    const cctvTrend = cameras.length === 0 
-      ? [{ name: 'No Cameras', value: 1, color: '#e5e7eb' }]
+
+    const cctvTrend = cameras.length === 0
+      ? [{ name: 'No of Cameras', value: 1, color: '#e5e7eb' }]
       : [
-          { name: 'Working', value: workingCameras, color: '#22c55e' },
-          { name: 'Faulty', value: faultyCameras, color: '#ef4444' },
-        ];
-        
+        { name: 'Working', value: workingCameras, color: '#22c55e' },
+        { name: 'Faulty', value: faultyCameras, color: '#ef4444' },
+      ];
+
     const patrolsCompleted = patrols.filter(p => p.status === 'Completed').length;
 
     return {
