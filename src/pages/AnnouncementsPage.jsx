@@ -65,7 +65,7 @@ export function AnnouncementsPage() {
           <h2 className="text-2xl font-bold text-gray-900">Announcements</h2>
           <p className="text-gray-500 mt-1">Broadcast important information to the community</p>
         </div>
-        {(role === ROLES.SUPER_ADMIN || role === ROLES.VOLUNTEER) && (
+        {role === ROLES.VOLUNTEER && (
           <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Broadcast</Button>
         )}
       </div>

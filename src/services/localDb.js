@@ -7,7 +7,6 @@ const defaultPhases = [
   { id: 'p4', name: 'Phase 4' },
   { id: 'p5', name: 'Phase 5' },
   { id: 'p6', name: 'Phase 6' },
-  { id: 's1', name: 'Sector 1' },
   { id: 's2', name: 'Sector 2' },
 ];
 
@@ -84,6 +83,7 @@ const initializeDb = () => {
     localStorage.setItem('guards', JSON.stringify([])); // Deprecated
     localStorage.setItem('committee', JSON.stringify(dummyCommittee));
     localStorage.setItem('serviceProviders', JSON.stringify(dummyServiceProviders));
+    localStorage.setItem('closedHouses', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
     const dummyUsers = Array.from({ length: 10 }, (_, i) => ({
       id: `USR-${101 + i}`, name: `User ${i + 1}`, role: i < 2 ? 'Volunteer' : (i < 5 ? 'Guard' : 'Community Member'), phase: i < 5 ? 'p1' : 'p2', sector: '', contact: `987654321${i}`, shift: (i >= 2 && i < 5) ? 'Day' : undefined
@@ -257,6 +257,15 @@ export const localDb = {
     return newProvider;
   },
   deleteServiceProvider: (id) => localDb.deleteItem('serviceProviders', id),
+
+  getClosedHouses: () => localDb.get('closedHouses'),
+  addClosedHouse: (closedHouse) => {
+    const closedHouses = localDb.get('closedHouses');
+    const newClosedHouse = { ...closedHouse, id: `CH-${100 + closedHouses.length + 1}` };
+    localDb.set('closedHouses', [newClosedHouse, ...closedHouses]);
+    return newClosedHouse;
+  },
+  deleteClosedHouse: (id) => localDb.deleteItem('closedHouses', id),
 
   getDashboardStats: (phaseFilter = 'All') => {
     let visitors = localDb.get('visitors');

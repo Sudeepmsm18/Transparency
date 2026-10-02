@@ -18,7 +18,7 @@ export function UserManagementPage() {
   const { addToast } = useToast();
   
   // Only Super Admin can view/add users
-  const isAdmin = role === ROLES.SUPER_ADMIN;
+  const isAdmin = role === ROLES.VOLUNTEER;
 
   useEffect(() => {
     setUsersList(localDb.getUsers());

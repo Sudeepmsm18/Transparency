@@ -16,6 +16,8 @@ import { ServicesPage } from "../pages/ServicesPage";
 import { ReportsPage } from "../pages/ReportsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { UserManagementPage } from "../pages/UserManagementPage";
+import { GuardsPage } from "../pages/GuardsPage";
+import { ClosedHousesPage } from "../pages/ClosedHousesPage";
 
 export function AppRoutes() {
   return (
@@ -27,10 +29,12 @@ export function AppRoutes() {
         <Route path="infrastructure" element={<InfrastructurePage />} />
         <Route path="visitors" element={<VisitorManagementPage />} />
         <Route path="vehicles" element={<VehiclesPage />} />
+        <Route path="guards" element={<GuardsPage />} />
         <Route path="patrols" element={<PatrolsPage />} />
         <Route path="association" element={<AssociationPage />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="closed-houses" element={<ClosedHousesPage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="reports" element={<ReportsPage />} />

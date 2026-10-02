@@ -8,7 +8,6 @@ export const phases = [
 ];
 
 export const sectors = [
-  { id: 's1', name: 'Sector 1', houses: 60, residents: 180 },
   { id: 's2', name: 'Sector 2', houses: 75, residents: 200 },
 ];
 

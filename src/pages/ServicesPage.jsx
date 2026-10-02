@@ -13,7 +13,7 @@ export function ServicesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', serviceType: 'Maid', contact: '', phase: 'All', sector: '' });
   const { role, phase } = useAuth();
-  const isAdmin = role === ROLES.SUPER_ADMIN || role === ROLES.VOLUNTEER;
+  const isAdmin = role === ROLES.VOLUNTEER;
 
   useEffect(() => {
     setProviders(localDb.getServiceProviders());

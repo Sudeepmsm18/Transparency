@@ -27,7 +27,7 @@ export function Header({ setSidebarOpen }) {
         <div className="flex items-center space-x-2 sm:space-x-4">
           <div className="flex items-center space-x-2">
             {/* Phase Switcher */}
-            {(role === ROLES.SUPER_ADMIN || role === ROLES.VOLUNTEER) && (
+            {role === ROLES.VOLUNTEER && (
               <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 hidden sm:flex">
                 <span className="text-xs text-gray-500 mr-2 font-medium uppercase tracking-wider">Phase:</span>
                 <select 

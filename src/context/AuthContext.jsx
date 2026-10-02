@@ -3,7 +3,6 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 export const ROLES = {
-  SUPER_ADMIN: "Super Admin",
   VOLUNTEER: "Volunteer",
   GUARD: "Security Guard",
   RESIDENT: "Community Member"
@@ -12,7 +11,7 @@ export const ROLES = {
 export const AuthProvider = ({ children }) => {
   // Try to load role from localStorage, default to Super Admin
   const [role, setRole] = useState(() => {
-    return localStorage.getItem('Transparency_demo_role') || ROLES.SUPER_ADMIN;
+    return localStorage.getItem('Transparency_demo_role') || ROLES.VOLUNTEER;
   });
 
   const [phase, setPhase] = useState(() => {
