@@ -84,6 +84,7 @@ const initializeDb = () => {
     localStorage.setItem('committee', JSON.stringify(dummyCommittee));
     localStorage.setItem('serviceProviders', JSON.stringify(dummyServiceProviders));
     localStorage.setItem('closedHouses', JSON.stringify([]));
+    localStorage.setItem('businesses', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
     const dummyUsers = Array.from({ length: 10 }, (_, i) => ({
       id: `USR-${101 + i}`, name: `User ${i + 1}`, role: i < 2 ? 'Volunteer' : (i < 5 ? 'Guard' : 'Community Member'), phase: i < 5 ? 'p1' : 'p2', sector: '', contact: `987654321${i}`, shift: (i >= 2 && i < 5) ? 'Day' : undefined
@@ -266,6 +267,23 @@ export const localDb = {
     return newClosedHouse;
   },
   deleteClosedHouse: (id) => localDb.deleteItem('closedHouses', id),
+
+  getBusinesses: () => localDb.get('businesses'),
+  addBusiness: (business) => {
+    const businesses = localDb.get('businesses');
+    const newBusiness = { ...business, id: `BUS-${100 + businesses.length + 1}`, status: 'Pending' };
+    localDb.set('businesses', [newBusiness, ...businesses]);
+    return newBusiness;
+  },
+  updateBusiness: (id, updates) => {
+    const businesses = localDb.get('businesses');
+    const index = businesses.findIndex(b => b.id === id);
+    if (index > -1) {
+      businesses[index] = { ...businesses[index], ...updates };
+      localDb.set('businesses', businesses);
+    }
+  },
+  deleteBusiness: (id) => localDb.deleteItem('businesses', id),
 
   getDashboardStats: (phaseFilter = 'All') => {
     let visitors = localDb.get('visitors');

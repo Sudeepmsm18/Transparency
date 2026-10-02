@@ -4,7 +4,7 @@ import { useAuth, ROLES } from "../../context/AuthContext";
 import {
   LayoutDashboard, Shield, Video, MapPin,
   Users, Car, Building, IndianRupee,
-  Wallet, Wrench, Bell, FileText, Settings, UserCog
+  Wallet, Wrench, Bell, FileText, Settings, UserCog, Store
 } from "lucide-react";
 
 // Add allowedRoles to each nav item
@@ -22,6 +22,7 @@ const navItems = [
   { name: "Expenses", path: "/expenses", icon: Wallet, roles: [ROLES.VOLUNTEER] },
   { name: "Closed Houses", path: "/closed-houses", icon: Building, roles: Object.values(ROLES) },
   { name: "Services", path: "/services", icon: Wrench, roles: Object.values(ROLES) },
+  { name: "Resident Businesses", path: "/businesses", icon: Store, roles: Object.values(ROLES) },
   { name: "Announcements", path: "/announcements", icon: Bell, roles: Object.values(ROLES) },
   { name: "Reports", path: "/reports", icon: FileText, roles: [ROLES.VOLUNTEER] },
   { name: "Settings", path: "/settings", icon: Settings, roles: [ROLES.VOLUNTEER] },

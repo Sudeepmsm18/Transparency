@@ -18,6 +18,7 @@ import { SettingsPage } from "../pages/SettingsPage";
 import { UserManagementPage } from "../pages/UserManagementPage";
 import { GuardsPage } from "../pages/GuardsPage";
 import { ClosedHousesPage } from "../pages/ClosedHousesPage";
+import { ResidentBusinessesPage } from "../pages/ResidentBusinessesPage";
 
 export function AppRoutes() {
   return (
@@ -36,6 +37,7 @@ export function AppRoutes() {
         <Route path="expenses" element={<ExpensesPage />} />
         <Route path="closed-houses" element={<ClosedHousesPage />} />
         <Route path="services" element={<ServicesPage />} />
+        <Route path="businesses" element={<ResidentBusinessesPage />} />
         <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />
