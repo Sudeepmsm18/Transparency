@@ -6,11 +6,11 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
 import { Search, Plus, IndianRupee, CreditCard, Receipt } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function PaymentsPage() {
-  const { phase } = useAuth();
+  const { phase, role } = useAuth();
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -83,7 +83,9 @@ export function PaymentsPage() {
           <h2 className="text-2xl font-bold text-gray-900">Payments & Collection</h2>
           <p className="text-gray-500 mt-1">Manage maintenance fees and association collections</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Record Payment</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Record Payment</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -144,7 +146,7 @@ export function PaymentsPage() {
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Purpose & Date</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -164,17 +166,19 @@ export function PaymentsPage() {
                   <td className="py-4 px-6">
                     {getStatusBadge(payment.status)}
                   </td>
-                  <td className="py-4 px-6 text-right whitespace-nowrap">
-                    {payment.proofPhoto && (
-                      <button 
-                        onClick={() => setSelectedProof(payment.proofPhoto)}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3 underline"
-                      >
-                        Proof
-                      </button>
-                    )}
-                    <Button variant="ghost" size="sm">Receipt</Button>
-                  </td>
+                  {role !== ROLES.RESIDENT && (
+                    <td className="py-4 px-6 text-right whitespace-nowrap">
+                      {payment.proofPhoto && (
+                        <button 
+                          onClick={() => setSelectedProof(payment.proofPhoto)}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3 underline"
+                        >
+                          Proof
+                        </button>
+                      )}
+                      <Button variant="ghost" size="sm">Receipt</Button>
+                    </td>
+                  )}
                 </tr>
               ))}
               {filteredPayments.length === 0 && (

@@ -5,14 +5,14 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Users, Trash2 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function AssociationPage() {
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
-  const { phase } = useAuth();
+  const { phase, role } = useAuth();
 
   useEffect(() => {
     setMembers(localDb.getCommittee());
@@ -42,19 +42,23 @@ export function AssociationPage() {
           <h2 className="text-2xl font-bold text-gray-900">Association Committee</h2>
           <p className="text-gray-500 mt-1">Directory of management committee members</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add Member</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add Member</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {filteredMembers.map(member => (
           <Card key={member.id} className="text-center p-6 flex flex-col items-center relative group">
-             <button 
-               onClick={() => handleDelete(member.id)}
-               className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
-               title="Remove Member"
-             >
-               <Trash2 className="w-4 h-4" />
-             </button>
+             {role !== ROLES.RESIDENT && (
+               <button 
+                 onClick={() => handleDelete(member.id)}
+                 className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
+                 title="Remove Member"
+               >
+                 <Trash2 className="w-4 h-4" />
+               </button>
+             )}
              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
                <Users className="w-8 h-8" />
              </div>

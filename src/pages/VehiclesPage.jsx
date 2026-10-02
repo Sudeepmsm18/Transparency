@@ -5,11 +5,11 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Car, Trash2 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function VehiclesPage() {
-  const { phase } = useAuth();
+  const { phase, role } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
@@ -42,7 +42,9 @@ export function VehiclesPage() {
           <h2 className="text-2xl font-bold text-gray-900">Vehicle Tracking</h2>
           <p className="text-gray-500 mt-1">Manage resident and authorized vehicles</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Register Vehicle</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Register Vehicle</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -58,7 +60,7 @@ export function VehiclesPage() {
               <th className="py-3 px-6 text-xs text-gray-500">Owner</th>
               <th className="py-3 px-6 text-xs text-gray-500">House / Unit</th>
               <th className="py-3 px-6 text-xs text-gray-500">Type</th>
-              <th className="py-3 px-6 text-xs text-gray-500 text-right">Actions</th>
+              {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs text-gray-500 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -68,15 +70,17 @@ export function VehiclesPage() {
                 <td className="py-3 px-6 text-sm">{v.owner}</td>
                 <td className="py-3 px-6 text-sm">{v.houseId}</td>
                 <td className="py-3 px-6 text-sm"><Badge>{v.type}</Badge></td>
-                <td className="py-3 px-6 text-right">
-                  <button 
-                    onClick={() => handleDelete(v.id)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
-                    title="Delete Vehicle"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
+                {role !== ROLES.RESIDENT && (
+                  <td className="py-3 px-6 text-right">
+                    <button 
+                      onClick={() => handleDelete(v.id)}
+                      className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      title="Delete Vehicle"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
             {filteredVehicles.length === 0 && <tr><td colSpan="5" className="text-center py-6 text-gray-500">No vehicles found for this phase.</td></tr>}

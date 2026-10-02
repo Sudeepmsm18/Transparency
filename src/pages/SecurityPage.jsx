@@ -87,8 +87,9 @@ export function SecurityPage() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Security Management</h2>
           <p className="text-gray-500 mt-1">Track and resolve security issues and incidents</p>
-        </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Report Issue</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Report Issue</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
