@@ -4,7 +4,7 @@ import { useAuth, ROLES } from "../../context/AuthContext";
 import { 
   LayoutDashboard, Shield, Video, MapPin, 
   Users, Car, Building, IndianRupee, 
-  Wallet, Wrench, Bell, FileText, Settings 
+  Wallet, Wrench, Bell, FileText, Settings, UserCog 
 } from "lucide-react";
 
 // Add allowedRoles to each nav item
@@ -14,7 +14,6 @@ const navItems = [
   { name: "CCTV Cameras", path: "/cctv", icon: Video, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER, ROLES.RESIDENT] },
   { name: "Street Lights", path: "/infrastructure", icon: MapPin, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER] },
   { name: "Visitors", path: "/visitors", icon: Users, roles: [ROLES.SUPER_ADMIN, ROLES.GUARD, ROLES.VOLUNTEER] },
-  { name: "Guards", path: "/guards", icon: Shield, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER] },
   { name: "Vehicles", path: "/vehicles", icon: Car, roles: [ROLES.SUPER_ADMIN, ROLES.GUARD, ROLES.VOLUNTEER] },
   { name: "Guard Rounds", path: "/patrols", icon: Shield, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER, ROLES.GUARD] },
   { name: "Association", path: "/association", icon: Building, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER] },
@@ -24,6 +23,7 @@ const navItems = [
   { name: "Announcements", path: "/announcements", icon: Bell, roles: Object.values(ROLES) },
   { name: "Reports", path: "/reports", icon: FileText, roles: [ROLES.SUPER_ADMIN, ROLES.VOLUNTEER] },
   { name: "Settings", path: "/settings", icon: Settings, roles: [ROLES.SUPER_ADMIN] },
+  { name: "Users", path: "/users", icon: UserCog, roles: [ROLES.SUPER_ADMIN] },
 ];
 
 export function Sidebar({ open, setOpen }) {
@@ -45,7 +45,7 @@ export function Sidebar({ open, setOpen }) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col",
+          "fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out flex flex-col",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >

@@ -14,8 +14,8 @@ export function Header({ setSidebarOpen }) {
       <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
         <div className="flex items-center">
           <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-md"
+            onClick={() => setSidebarOpen(prev => !prev)}
+            className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-md"
           >
             <Menu className="w-6 h-6" />
           </button>

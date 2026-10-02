@@ -12,15 +12,19 @@ const defaultPhases = [
 ];
 
 const initializeDb = () => {
-  if (!localStorage.getItem('securecomm_demo_v3_initialized')) {
+  if (!localStorage.getItem('securecomm_demo_v7_initialized')) {
     localStorage.setItem('phases', JSON.stringify(defaultPhases));
     
     // Add some dummy data so dashboard isn't completely empty
-    const dummyInfrastructure = [
-      { id: 'INF-101', name: 'Main Gate Light', type: 'Streetlight', phase: 'p1', location: 'Gate 1', status: 'Working' },
-      { id: 'INF-102', name: 'Park Light 1', type: 'Streetlight', phase: 'p2', location: 'Central Park', status: 'Working' },
-      { id: 'INF-103', name: 'Perimeter Light 4', type: 'Streetlight', phase: 'p1', location: 'North Wall', status: 'Faulty' },
-    ];
+    // Generate 30 street lights
+    const dummyInfrastructure = Array.from({ length: 30 }, (_, i) => ({
+      id: `INF-${100 + i}`,
+      name: `Street Light ${i + 1}`,
+      type: 'Streetlight',
+      phase: i < 10 ? 'p1' : i < 20 ? 'p2' : 'p3',
+      location: `Pole ${i + 1}`,
+      status: i < 27 ? 'Working' : 'Faulty'
+    }));
     
     const dummyExpenses = [
       { id: 'EXP-1001', title: 'Gardening Services', category: 'Maintenance', amount: 15000, date: new Date().toISOString().split('T')[0], phase: 'All', approvedBy: 'Admin' },
@@ -40,30 +44,67 @@ const initializeDb = () => {
       { id: 'PAT-1003', guard: 'Ramu', route: 'Main Gate', status: 'Missed / Incomplete', date: new Date().toISOString().split('T')[0], time: '14:00', phase: 'All' },
     ];
 
-    const dummyCameras = [
-      { id: 'CAM-001', name: 'Main Gate Entry', location: 'Gate 1', type: 'Bullet', status: 'Working', phase: 'p1' },
-      { id: 'CAM-002', name: 'Park Corner', location: 'Central Park', type: 'Dome', status: 'Working', phase: 'p2' },
-      { id: 'CAM-003', name: 'Basement Parking', location: 'Block A Basement', type: 'PTZ', status: 'Not Working', phase: 'p1' },
-    ];
+    // Generate 40 cameras: 35 working, 5 faulty
+    const dummyCameras = Array.from({ length: 40 }, (_, i) => ({
+      id: `CAM-${String(i + 1).padStart(3, '0')}`,
+      name: `Camera ${i + 1}`,
+      location: `Location ${i + 1}`,
+      type: i % 2 === 0 ? 'Bullet' : 'Dome',
+      status: i < 35 ? 'Working' : 'Not Working',
+      phase: i < 15 ? 'p1' : i < 25 ? 'p2' : 'p3'
+    }));
     
     const dummyIssues = [
       { id: 'ISS-101', category: 'Suspicious Activity', description: 'Unknown person wandering near Block B', priority: 'High', status: 'Open', phase: 'p2', reportedBy: 'Admin', date: new Date().toISOString().split('T')[0] }
     ];
 
+    const dummyVisitors = [
+      { id: 'V-1001', name: 'Ramesh Singh', mobile: '9876543210', hostHouse: 'A-101', purpose: 'Delivery', vehicleNumber: 'KA-01-AB-1234', gate: 'Main gate', phase: 'p1', sector: 's1', entryTime: '10:15', exitTime: '10:45', status: 'Exited' },
+      { id: 'V-1002', name: 'Suresh Kumar', mobile: '9876543211', hostHouse: 'B-205', purpose: 'Service', vehicleNumber: 'KA-02-CD-5678', gate: 'Main gate', phase: 'p2', sector: 's2', entryTime: '14:30', exitTime: null, status: 'Inside' },
+      { id: 'V-1003', name: 'Amit Patel', mobile: '9876543212', hostHouse: 'C-304', purpose: 'Guest', vehicleNumber: '', gate: 'Pending', phase: 'p3', sector: '', entryTime: 'Expected 2026-10-05 18:00', exitTime: null, status: 'Pre-approved' }
+    ];
+
+    const dummyAnnouncements = [
+      { id: 'ANN-101', title: 'Water Supply Interruption', content: 'Water supply will be interrupted in Phase 1 from 2 PM to 5 PM today for maintenance.', target: 'Phase 1 Only', priority: 'High', date: new Date().toISOString() },
+      { id: 'ANN-102', title: 'Upcoming Festival Celebration', content: 'Join us for the Diwali celebration at the Central Park next Friday at 6 PM.', target: 'All Residents', priority: 'Normal', date: new Date().toISOString() }
+    ];
+
+    const dummyVehicles = [
+      { id: 'VEH-1001', owner: 'Rahul Sharma', houseId: 'A-101', type: 'Car', number: 'KA-01-AB-1234', makeModel: 'Honda City', phase: 'p1', sector: 's1', date: new Date().toISOString().split('T')[0] },
+      { id: 'VEH-1002', owner: 'Anita Desai', houseId: 'B-205', type: 'Two-Wheeler', number: 'KA-05-XY-9876', makeModel: 'Honda Activa', phase: 'p2', sector: '', date: new Date().toISOString().split('T')[0] }
+    ];
+
+    const dummyCommittee = [
+      { id: 'COM-101', name: 'Ravi Verma', role: 'President', contact: '9988776655', phase: 'p1', sector: 's1' },
+      { id: 'COM-102', name: 'Sneha Rao', role: 'Secretary', contact: '9988776656', phase: 'p2', sector: '' }
+    ];
+
+    const dummyServiceProviders = [
+      { id: 'SRV-101', name: 'Raju Plumber', serviceType: 'Plumber', contact: '9876543210', verified: true, phase: 'All' },
+      { id: 'SRV-102', name: 'A-1 Electricians', serviceType: 'Electrician', contact: '9876543211', verified: true, phase: 'All' },
+      { id: 'SRV-103', name: 'Cool Care AC', serviceType: 'AC Repair', contact: '9876543212', verified: false, phase: 'p1' }
+    ];
+
     localStorage.setItem('cameras', JSON.stringify(dummyCameras));
     localStorage.setItem('securityIssues', JSON.stringify(dummyIssues));
-    localStorage.setItem('visitors', JSON.stringify([]));
+    localStorage.setItem('visitors', JSON.stringify(dummyVisitors));
     localStorage.setItem('payments', JSON.stringify(dummyPayments));
     localStorage.setItem('expenses', JSON.stringify(dummyExpenses));
-    localStorage.setItem('announcements', JSON.stringify([]));
+    localStorage.setItem('announcements', JSON.stringify(dummyAnnouncements));
     localStorage.setItem('infrastructure', JSON.stringify(dummyInfrastructure));
-    localStorage.setItem('vehicles', JSON.stringify([]));
+    localStorage.setItem('vehicles', JSON.stringify(dummyVehicles));
     localStorage.setItem('patrols', JSON.stringify(dummyPatrols));
-    localStorage.setItem('guards', JSON.stringify([]));
-    localStorage.setItem('committee', JSON.stringify([]));
-    localStorage.setItem('serviceProviders', JSON.stringify([]));
+    localStorage.setItem('guards', JSON.stringify([])); // Deprecated
+    localStorage.setItem('committee', JSON.stringify(dummyCommittee));
+    localStorage.setItem('serviceProviders', JSON.stringify(dummyServiceProviders));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
-    localStorage.setItem('securecomm_demo_v3_initialized', 'true');
+    localStorage.setItem('users', JSON.stringify([
+      { id: 'USR-101', name: 'Sudeep', role: 'Volunteer', phase: 'p1', sector: 's1', contact: '9876543210' },
+      { id: 'USR-102', name: 'John Doe', role: 'Community Member', phase: 'p2', sector: '', contact: '9876543211' },
+      { id: 'USR-103', name: 'Ramu Guard', role: 'Guard', phase: 'p1', sector: 's1', contact: '9876543212', shift: 'Day' },
+      { id: 'USR-104', name: 'Shyam Guard', role: 'Guard', phase: 'p2', sector: '', contact: '9876543213', shift: 'Night' }
+    ]));
+    localStorage.setItem('securecomm_demo_v7_initialized', 'true');
   }
 };
 
@@ -203,6 +244,15 @@ export const localDb = {
     return newPatrol;
   },
   deletePatrol: (id) => localDb.deleteItem('patrols', id),
+
+  getUsers: () => localDb.get('users'),
+  addUser: (user) => {
+    const users = localDb.get('users');
+    const newUser = { ...user, id: `USR-${100 + users.length + 1}` };
+    localDb.set('users', [newUser, ...users]);
+    return newUser;
+  },
+  deleteUser: (id) => localDb.deleteItem('users', id),
 
   getCommittee: () => localDb.get('committee'),
   addCommitteeMember: (member) => {

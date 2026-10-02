@@ -7,6 +7,7 @@ import { Modal } from "../components/common/Modal";
 import { Search, Plus, Users, UserCheck, UserX, Clock, Phone, Car, Home } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
+import { useToast } from "../context/ToastContext";
 
 export function VisitorManagementPage() {
   const { phase } = useAuth();
@@ -14,10 +15,15 @@ export function VisitorManagementPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPreapproveModalOpen, setIsPreapproveModalOpen] = useState(false);
   const { addToast } = useToast();
   
   const [formData, setFormData] = useState({
     name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: ''
+  });
+
+  const [preapproveData, setPreapproveData] = useState({
+    name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1', sector: ''
   });
 
   useEffect(() => {
@@ -42,6 +48,24 @@ export function VisitorManagementPage() {
     setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: '' });
   };
 
+  const handlePreapproveVisitor = (e) => {
+    e.preventDefault();
+    const newVisitor = {
+      ...preapproveData,
+      entryTime: `Expected ${preapproveData.expectedDate} ${preapproveData.expectedTime}`,
+      exitTime: null,
+      gate: 'Pending',
+      status: 'Pre-approved'
+    };
+    localDb.addVisitor(newVisitor);
+    setVisitors(localDb.getVisitors());
+    setIsPreapproveModalOpen(false);
+    
+    addToast(`Pass generated for ${preapproveData.name} and sent to mobile.`, 'success');
+
+    setPreapproveData({ name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1', sector: '' });
+  };
+
   const handleMarkExit = (id) => {
     localDb.updateVisitor(id, { 
       status: 'Exited', 
@@ -64,6 +88,7 @@ export function VisitorManagementPage() {
       case "Inside": return <Badge variant="warning">Inside</Badge>;
       case "Exited": return <Badge variant="success">Exited</Badge>;
       case "Denied": return <Badge variant="danger">Denied</Badge>;
+      case "Pre-approved": return <Badge variant="info">Pre-approved</Badge>;
       default: return <Badge>{status}</Badge>;
     }
   };
@@ -79,7 +104,7 @@ export function VisitorManagementPage() {
           <p className="text-gray-500 mt-1">Track and manage visitors entering the community</p>
         </div>
         <div className="flex space-x-2 w-full sm:w-auto">
-          <Button variant="secondary">Pre-approve</Button>
+          <Button variant="secondary" onClick={() => setIsPreapproveModalOpen(true)}>Pre-approve</Button>
           <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Entry</Button>
         </div>
       </div>
@@ -143,6 +168,7 @@ export function VisitorManagementPage() {
                 <option value="All">All Status</option>
                 <option value="Inside">Inside</option>
                 <option value="Exited">Exited</option>
+                <option value="Pre-approved">Pre-approved</option>
               </select>
             </div>
           </div>
@@ -195,6 +221,18 @@ export function VisitorManagementPage() {
               {v.status === "Inside" && (
                 <div className="mt-4 flex justify-end space-x-2">
                   <Button variant="primary" size="sm" onClick={() => handleMarkExit(v.id)}>Mark Exit</Button>
+                </div>
+              )}
+              {v.status === "Pre-approved" && (
+                <div className="mt-4 flex justify-end space-x-2">
+                  <Button variant="success" size="sm" onClick={() => {
+                    localDb.updateVisitor(v.id, { 
+                      status: 'Inside', 
+                      entryTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                      gate: 'Main gate' 
+                    });
+                    setVisitors(localDb.getVisitors());
+                  }}>Mark Entered</Button>
                 </div>
               )}
             </div>
@@ -268,6 +306,63 @@ export function VisitorManagementPage() {
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
             <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button type="submit">Register Entry</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isPreapproveModalOpen} onClose={() => setIsPreapproveModalOpen(false)} title="Pre-approve Visitor">
+        <form onSubmit={handlePreapproveVisitor} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Visitor Name *</label>
+              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.name} onChange={e => setPreapproveData({...preapproveData, name: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Mobile Number *</label>
+              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.mobile} onChange={e => setPreapproveData({...preapproveData, mobile: e.target.value})} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Host House *</label>
+              <input required type="text" placeholder="e.g. P1-104" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.hostHouse} onChange={e => setPreapproveData({...preapproveData, hostHouse: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Phase *</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.phase} onChange={e => setPreapproveData({...preapproveData, phase: e.target.value})}>
+                {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={preapproveData.sector || ''} onChange={e => setPreapproveData({...preapproveData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Expected Date</label>
+              <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.expectedDate} onChange={e => setPreapproveData({...preapproveData, expectedDate: e.target.value})} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Expected Time</label>
+              <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.expectedTime} onChange={e => setPreapproveData({...preapproveData, expectedTime: e.target.value})} />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Purpose</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={preapproveData.purpose} onChange={e => setPreapproveData({...preapproveData, purpose: e.target.value})}>
+              <option value="Guest">Guest</option>
+              <option value="Delivery">Delivery</option>
+              <option value="Service">Service</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+            <Button variant="secondary" type="button" onClick={() => setIsPreapproveModalOpen(false)}>Cancel</Button>
+            <Button type="submit">Generate Pass</Button>
           </div>
         </form>
       </Modal>

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useAuth, ROLES } from "../context/AuthContext";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 import { CctvManagementPage } from "../pages/CctvManagementPage";
@@ -9,12 +10,12 @@ import { ExpensesPage } from "../pages/ExpensesPage";
 import { AnnouncementsPage } from "../pages/AnnouncementsPage";
 import { InfrastructurePage } from "../pages/InfrastructurePage";
 import { VehiclesPage } from "../pages/VehiclesPage";
-import { GuardsPage } from "../pages/GuardsPage";
 import { PatrolsPage } from "../pages/PatrolsPage";
 import { AssociationPage } from "../pages/AssociationPage";
 import { ServicesPage } from "../pages/ServicesPage";
 import { ReportsPage } from "../pages/ReportsPage";
 import { SettingsPage } from "../pages/SettingsPage";
+import { UserManagementPage } from "../pages/UserManagementPage";
 
 export function AppRoutes() {
   return (
@@ -22,7 +23,6 @@ export function AppRoutes() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="security" element={<SecurityPage />} />
-        <Route path="guards" element={<GuardsPage />} />
         <Route path="cctv" element={<CctvManagementPage />} />
         <Route path="infrastructure" element={<InfrastructurePage />} />
         <Route path="visitors" element={<VisitorManagementPage />} />
@@ -35,6 +35,7 @@ export function AppRoutes() {
         <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="users" element={<UserManagementPage />} />
       </Route>
     </Routes>
   );
