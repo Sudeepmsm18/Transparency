@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { phases } from "../data/mockData";
+import { phases, sectors } from "../data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Search, Plus, Video, Settings, Activity, Trash2 } from "lucide-react";
+import { useAuth, ROLES } from "../context/AuthContext";
 
 export function CctvManagementPage() {
+  const { phase, role } = useAuth();
   const [cameras, setCameras] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [phaseFilter, setPhaseFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', phase: 'p1', location: '', type: 'Bullet'
+    name: '', phase: 'p1', sector: '', location: '', type: 'Bullet'
   });
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export function CctvManagementPage() {
     localDb.addCamera(newCamera);
     setCameras(localDb.getCameras());
     setIsModalOpen(false);
-    setFormData({ name: '', phase: 'p1', location: '', type: 'Bullet' });
+    setFormData({ name: '', phase: 'p1', sector: '', location: '', type: 'Bullet' });
   };
 
   const handleUpdateStatus = (id, newStatus) => {
@@ -50,7 +51,7 @@ export function CctvManagementPage() {
     const matchesSearch = cam.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           cam.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "All" || cam.status === statusFilter;
-    const matchesPhase = phaseFilter === "All" || cam.phase === phaseFilter;
+    const matchesPhase = phase === "All" || cam.phase === phase;
     return matchesSearch && matchesStatus && matchesPhase;
   });
 
@@ -74,7 +75,9 @@ export function CctvManagementPage() {
           <h2 className="text-2xl font-bold text-gray-900">CCTV & Infrastructure</h2>
           <p className="text-gray-500 mt-1">Manage and monitor community camera network</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add Camera</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add Camera</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -140,14 +143,6 @@ export function CctvManagementPage() {
                 />
               </div>
               <select 
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                value={phaseFilter}
-                onChange={(e) => setPhaseFilter(e.target.value)}
-              >
-                <option value="All">All Phases</option>
-                {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-              <select 
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white hidden sm:block"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -168,7 +163,7 @@ export function CctvManagementPage() {
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Phase / Location</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -188,25 +183,27 @@ export function CctvManagementPage() {
                     <td className="py-4 px-6">
                       {getStatusBadge(cam.status)}
                     </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap">
-                      <select 
-                        className="text-sm border border-gray-300 rounded-md px-2 py-1 mr-2"
-                        onChange={(e) => handleUpdateStatus(cam.id, e.target.value)}
-                        value={cam.status}
-                      >
-                        <option value="Working">Working</option>
-                        <option value="Not Working">Not Working (Faulty)</option>
-                        <option value="Under Maintenance">Maintenance</option>
-                      </select>
-                      <button 
-                        onClick={() => handleDeleteCamera(cam.id)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors mr-2"
-                        title="Delete Camera"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <Button variant="ghost" size="sm">Details</Button>
-                    </td>
+                    {role !== ROLES.RESIDENT && (
+                      <td className="py-4 px-6 text-right whitespace-nowrap">
+                        <select 
+                          className="text-sm border border-gray-300 rounded-md px-2 py-1 mr-2"
+                          onChange={(e) => handleUpdateStatus(cam.id, e.target.value)}
+                          value={cam.status}
+                        >
+                          <option value="Working">Working</option>
+                          <option value="Not Working">Not Working (Faulty)</option>
+                          <option value="Under Maintenance">Maintenance</option>
+                        </select>
+                        <button 
+                          onClick={() => handleDeleteCamera(cam.id)}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors mr-2"
+                          title="Delete Camera"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <Button variant="ghost" size="sm">Details</Button>
+                      </td>
+                    )}
                   </tr>
                 )
               })}
@@ -234,6 +231,13 @@ export function CctvManagementPage() {
               <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
                 {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
+          </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Camera Type *</label>

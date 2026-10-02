@@ -1,18 +1,22 @@
 import { localDb } from "./localDb";
 
 export const dashboardService = {
-  getStats: async () => {
+  getStats: async (phaseFilter = 'All') => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(localDb.getDashboardStats());
+        resolve(localDb.getDashboardStats(phaseFilter));
       }, 500);
     });
   },
 
-  getRecentIssues: async () => {
+  getRecentIssues: async (phaseFilter = 'All') => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(localDb.getSecurityIssues().slice(0, 5));
+        let issues = localDb.getSecurityIssues();
+        if (phaseFilter !== 'All') {
+          issues = issues.filter(i => i.phase === phaseFilter || !i.phase);
+        }
+        resolve(issues.slice(0, 5));
       }, 500);
     });
   },

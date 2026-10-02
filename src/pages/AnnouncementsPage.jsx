@@ -5,13 +5,15 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
-import { Search, Plus, Bell, Megaphone, Calendar } from "lucide-react";
+import { useAuth, ROLES } from "../context/AuthContext";
+import { Search, Plus, Bell, Megaphone, Calendar, Users } from "lucide-react";
 
 export function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
+  const { role, phase } = useAuth();
   
   const [formData, setFormData] = useState({
     title: '', content: '', target: 'All Residents', priority: 'Normal'
@@ -42,10 +44,19 @@ export function AnnouncementsPage() {
     }
   };
 
-  const filteredAnnouncements = announcements.filter((a) => 
-    a.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    a.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAnnouncements = announcements.filter((a) => {
+    const matchesSearch = a.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          a.content.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    let matchesPhase = true;
+    if (phase === 'p1') {
+      matchesPhase = a.target === 'All Residents' || a.target === 'Phase 1 Only' || a.target === 'Security Team';
+    } else if (phase === 'p2') {
+      matchesPhase = a.target === 'All Residents' || a.target === 'Phase 2 Only' || a.target === 'Security Team';
+    }
+
+    return matchesSearch && matchesPhase;
+  });
 
   return (
     <div className="space-y-6">
@@ -54,7 +65,9 @@ export function AnnouncementsPage() {
           <h2 className="text-2xl font-bold text-gray-900">Announcements</h2>
           <p className="text-gray-500 mt-1">Broadcast important information to the community</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Broadcast</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Broadcast</Button>
+        )}
       </div>
 
       <Card>

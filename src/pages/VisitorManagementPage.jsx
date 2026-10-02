@@ -4,10 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { useToast } from "../context/ToastContext";
 import { Search, Plus, Users, UserCheck, UserX, Clock, Phone, Car, Home } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { phases, sectors } from "../data/mockData";
 
 export function VisitorManagementPage() {
+  const { phase } = useAuth();
   const [visitors, setVisitors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -15,7 +17,7 @@ export function VisitorManagementPage() {
   const { addToast } = useToast();
   
   const [formData, setFormData] = useState({
-    name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main Gate'
+    name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: ''
   });
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export function VisitorManagementPage() {
     // Trigger WhatsApp notification popup
     addToast(`WhatsApp notification sent to Host (${formData.hostHouse}) regarding arrival of ${formData.name}.`, 'whatsapp');
 
-    setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main Gate' });
+    setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: '' });
   };
 
   const handleMarkExit = (id) => {
@@ -53,7 +55,8 @@ export function VisitorManagementPage() {
                           v.hostHouse.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           v.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "All" || v.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
+    return matchesSearch && matchesStatus && matchesPhase;
   });
 
   const getStatusBadge = (status) => {
@@ -198,7 +201,7 @@ export function VisitorManagementPage() {
           ))}
           {filteredVisitors.length === 0 && (
             <div className="py-12 text-center text-gray-500">
-              No visitors found matching your criteria.
+              No visitors found for this phase.
             </div>
           )}
         </div>
@@ -222,6 +225,21 @@ export function VisitorManagementPage() {
               <input required type="text" placeholder="e.g. P1-104" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.hostHouse} onChange={e => setFormData({...formData, hostHouse: e.target.value})} />
             </div>
             <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Phase *</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+                {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+          </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Purpose</label>
               <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.purpose} onChange={e => setFormData({...formData, purpose: e.target.value})}>
                 <option value="Guest">Guest</option>
@@ -239,8 +257,11 @@ export function VisitorManagementPage() {
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Entry Gate</label>
               <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.gate} onChange={e => setFormData({...formData, gate: e.target.value})}>
-                <option value="Main Gate">Main Gate</option>
-                <option value="Gate 2">Gate 2</option>
+                <option value="Main gate">Main gate</option>
+                <option value="4th phase entry gate">4th phase entry gate</option>
+                <option value="3rd phase entry gate">3rd phase entry gate</option>
+                <option value="2nd sector-gate1(whine shop)">2nd sector-gate1(whine shop)</option>
+                <option value="gate2(whine shop)">gate2(whine shop)</option>
               </select>
             </div>
           </div>

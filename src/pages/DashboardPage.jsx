@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Car, ShieldAlert, VideoOff, 
-  MapPinOff, ShieldCheck, Home, IndianRupee 
+  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp 
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { dashboardService } from "../services/dashboardService";
 import { Badge } from "../components/common/Badge";
+import { useAuth } from "../context/AuthContext";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -13,6 +15,7 @@ import {
 } from "recharts";
 
 export function DashboardPage() {
+  const { phase } = useAuth();
   const [stats, setStats] = useState(null);
   const [recentIssues, setRecentIssues] = useState([]);
   const [recentAnnouncements, setRecentAnnouncements] = useState([]);
@@ -20,10 +23,11 @@ export function DashboardPage() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
       try {
         const [statsData, issuesData, announcementsData] = await Promise.all([
-          dashboardService.getStats(),
-          dashboardService.getRecentIssues(),
+          dashboardService.getStats(phase),
+          dashboardService.getRecentIssues(phase),
           dashboardService.getAnnouncements()
         ]);
         setStats(statsData);
@@ -36,7 +40,7 @@ export function DashboardPage() {
       }
     };
     fetchDashboardData();
-  }, []);
+  }, [phase]);
 
   if (loading) {
     return (
@@ -47,14 +51,14 @@ export function DashboardPage() {
   }
 
   const kpiData = [
-    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100" },
-    { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100" },
-    { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100" },
-    { title: "CCTV Faults", value: stats.camerasNotWorking, icon: VideoOff, color: "text-orange-600", bg: "bg-orange-100" },
-    { title: "Total Collection", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100" },
-    { title: "Pending Dues", value: `₹${stats.pendingPayments.toLocaleString()}`, icon: IndianRupee, color: "text-orange-600", bg: "bg-orange-100" },
-    { title: "Total Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100" },
-    { title: "Patrols Done", value: `${stats.patrolsCompleted}/${stats.totalPatrols}`, icon: ShieldCheck, color: "text-green-600", bg: "bg-green-100" },
+    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/visitors" },
+    { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100", link: "/vehicles" },
+    { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100", link: "/security" },
+    { title: "CCTV Faults", value: stats.camerasNotWorking, icon: VideoOff, color: "text-orange-600", bg: "bg-orange-100", link: "/cctv" },
+    { title: "Total Collection", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
+    { title: "Total Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100", link: "/expenses" },
+    { title: "Savings Amount", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
+    { title: "Street Lights", value: stats.streetLightsCount, icon: Lightbulb, color: "text-yellow-600", bg: "bg-yellow-100", link: "/infrastructure" },
   ];
 
   const getStatusBadge = (status) => {
@@ -77,17 +81,19 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {kpiData.map((kpi, i) => (
-          <Card key={i}>
-            <CardContent className="p-2.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${kpi.bg}`}>
-                <kpi.icon className={`w-4 h-4 sm:w-6 sm:h-6 ${kpi.color}`} />
-              </div>
-              <div>
-                <p className="text-[10px] sm:text-sm font-medium text-gray-500 leading-tight">{kpi.title}</p>
-                <h4 className="text-base sm:text-2xl font-bold text-gray-900">{kpi.value}</h4>
-              </div>
-            </CardContent>
-          </Card>
+          <Link to={kpi.link} key={i}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <CardContent className="p-2.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${kpi.bg}`}>
+                  <kpi.icon className={`w-4 h-4 sm:w-6 sm:h-6 ${kpi.color}`} />
+                </div>
+                <div>
+                  <p className="text-[10px] sm:text-sm font-medium text-gray-500 leading-tight">{kpi.title}</p>
+                  <h4 className="text-base sm:text-2xl font-bold text-gray-900">{kpi.value}</h4>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

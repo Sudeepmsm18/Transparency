@@ -5,11 +5,14 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Users, Trash2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { phases, sectors } from "../data/mockData";
 
 export function AssociationPage() {
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', role: 'President', contact: '' });
+  const [formData, setFormData] = useState({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
+  const { phase } = useAuth();
 
   useEffect(() => {
     setMembers(localDb.getCommittee());
@@ -20,8 +23,10 @@ export function AssociationPage() {
     localDb.addCommitteeMember(formData);
     setMembers(localDb.getCommittee());
     setIsModalOpen(false);
-    setFormData({ name: '', role: 'President', contact: '' });
+    setFormData({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
   };
+
+  const filteredMembers = members.filter(m => phase === 'All' || m.phase === phase || !m.phase);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to remove this member?")) {
@@ -41,7 +46,7 @@ export function AssociationPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {members.map(member => (
+        {filteredMembers.map(member => (
           <Card key={member.id} className="text-center p-6 flex flex-col items-center relative group">
              <button 
                onClick={() => handleDelete(member.id)}
@@ -58,9 +63,9 @@ export function AssociationPage() {
              <p className="text-sm text-gray-500">{member.contact}</p>
           </Card>
         ))}
-        {members.length === 0 && (
+        {filteredMembers.length === 0 && (
           <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
-            No committee members added yet.
+            No committee members found for this phase.
           </div>
         )}
       </div>
@@ -70,6 +75,13 @@ export function AssociationPage() {
           <input required placeholder="Name" className="w-full border rounded p-2" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
           <select className="w-full border rounded p-2" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
             <option>President</option><option>Secretary</option><option>Treasurer</option><option>Member</option>
+          </select>
+          <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+            {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <input required placeholder="Contact info" className="w-full border rounded p-2" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} />
           <div className="flex justify-end space-x-2 pt-4">

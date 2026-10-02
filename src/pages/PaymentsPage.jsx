@@ -6,16 +6,22 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
 import { Search, Plus, IndianRupee, CreditCard, Receipt } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { phases, sectors } from "../data/mockData";
 
 export function PaymentsPage() {
+  const { phase } = useAuth();
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
   
   const [formData, setFormData] = useState({
-    houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI'
+    houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1', sector: ''
   });
+
+  const [selectedProof, setSelectedProof] = useState(null);
 
   useEffect(() => {
     setPayments(localDb.getPayments());
@@ -34,7 +40,18 @@ export function PaymentsPage() {
     addToast(`Payment of ₹${formData.amount} recorded for ${formData.houseId}.`, 'success');
     addToast(`WhatsApp receipt sent to ${formData.ownerName}.`, 'whatsapp');
 
-    setFormData({ houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI' });
+    setFormData({ houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1', sector: '' });
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, proofPhoto: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -46,13 +63,18 @@ export function PaymentsPage() {
     }
   };
 
-  const totalCollected = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + Number(p.amount), 0);
-  const pendingAmount = payments.filter(p => p.status !== 'Paid').reduce((sum, p) => sum + Number(p.amount), 0);
+  const totalCollected = payments.filter(p => p.status === 'Paid' && (phase === 'All' || p.phase === phase || !p.phase)).reduce((sum, p) => sum + Number(p.amount), 0);
+  const pendingAmount = payments.filter(p => p.status !== 'Paid' && (phase === 'All' || p.phase === phase || !p.phase)).reduce((sum, p) => sum + Number(p.amount), 0);
 
-  const filteredPayments = payments.filter((p) => 
-    p.houseId.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPayments = payments.filter((p) => {
+    const matchesSearch = p.houseId.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.ownerName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPhase = phase === 'All' || p.phase === phase || !p.phase;
+    const matchesStatus = statusFilter === 'All' || 
+                          (statusFilter === 'Paid' && p.status === 'Paid') || 
+                          (statusFilter === 'Unpaid' && p.status !== 'Paid');
+    return matchesSearch && matchesPhase && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -103,6 +125,15 @@ export function PaymentsPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <select
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white w-full sm:w-auto mt-3 sm:mt-0 sm:ml-3"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All">All Status</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid / Pending</option>
+            </select>
           </div>
         </CardHeader>
         <div className="overflow-x-auto">
@@ -133,7 +164,15 @@ export function PaymentsPage() {
                   <td className="py-4 px-6">
                     {getStatusBadge(payment.status)}
                   </td>
-                  <td className="py-4 px-6 text-right">
+                  <td className="py-4 px-6 text-right whitespace-nowrap">
+                    {payment.proofPhoto && (
+                      <button 
+                        onClick={() => setSelectedProof(payment.proofPhoto)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3 underline"
+                      >
+                        Proof
+                      </button>
+                    )}
                     <Button variant="ghost" size="sm">Receipt</Button>
                   </td>
                 </tr>
@@ -141,7 +180,7 @@ export function PaymentsPage() {
               {filteredPayments.length === 0 && (
                 <tr>
                   <td colSpan="5" className="py-8 text-center text-gray-500">
-                    No payments found.
+                    No payments found for this phase.
                   </td>
                 </tr>
               )}
@@ -183,11 +222,41 @@ export function PaymentsPage() {
               <option value="Fine">Fine / Penalty</option>
             </select>
           </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Phase *</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+              {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Payment Proof (Photo/Screenshot)</label>
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white" />
+            {formData.proofPhoto && (
+              <div className="mt-2 border rounded p-1 inline-block bg-gray-50">
+                <img src={formData.proofPhoto} alt="Proof" className="h-24 object-contain" />
+              </div>
+            )}
+          </div>
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
             <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button type="submit">Save Payment</Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal isOpen={!!selectedProof} onClose={() => setSelectedProof(null)} title="Payment Proof">
+        <div className="flex justify-center p-2 bg-gray-50 rounded-lg">
+          {selectedProof && (
+            <img src={selectedProof} alt="Payment Proof" className="max-w-full max-h-[70vh] object-contain rounded shadow-sm border border-gray-200" />
+          )}
+        </div>
       </Modal>
     </div>
   );

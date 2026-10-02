@@ -3,9 +3,10 @@ import { Bell, Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./Button";
 import { useAuth, ROLES } from "../../context/AuthContext";
 import { ProfileActivityModal } from "./ProfileActivityModal";
+import { phases } from "../../data/mockData";
 
 export function Header({ setSidebarOpen }) {
-  const { role, setRole } = useAuth();
+  const { role, setRole, phase, setPhase } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -24,18 +25,37 @@ export function Header({ setSidebarOpen }) {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
-          {/* Role Switcher for Demo */}
-          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5">
-            <span className="hidden sm:inline text-xs text-gray-500 mr-2 font-medium uppercase tracking-wider">Demo:</span>
-            <select 
-              className="bg-transparent text-xs sm:text-sm font-medium text-gray-900 outline-none cursor-pointer"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              {Object.values(ROLES).map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
+          <div className="flex items-center space-x-2">
+            {/* Phase Switcher */}
+            {(role === ROLES.SUPER_ADMIN || role === ROLES.VOLUNTEER) && (
+              <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 hidden sm:flex">
+                <span className="text-xs text-gray-500 mr-2 font-medium uppercase tracking-wider">Phase:</span>
+                <select 
+                  className="bg-transparent text-xs sm:text-sm font-medium text-gray-900 outline-none cursor-pointer"
+                  value={phase}
+                  onChange={(e) => setPhase(e.target.value)}
+                >
+                  <option value="All">All Phases</option>
+                  {phases.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Role Switcher for Demo */}
+            <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5">
+              <span className="hidden sm:inline text-xs text-gray-500 mr-2 font-medium uppercase tracking-wider">Demo:</span>
+              <select 
+                className="bg-transparent text-xs sm:text-sm font-medium text-gray-900 outline-none cursor-pointer"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                {Object.values(ROLES).map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative">

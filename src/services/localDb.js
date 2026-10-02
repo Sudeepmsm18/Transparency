@@ -4,24 +4,66 @@ const defaultPhases = [
   { id: 'p1', name: 'Phase 1' },
   { id: 'p2', name: 'Phase 2' },
   { id: 'p3', name: 'Phase 3' },
+  { id: 'p4', name: 'Phase 4' },
+  { id: 'p5', name: 'Phase 5' },
+  { id: 'p6', name: 'Phase 6' },
+  { id: 's1', name: 'Sector 1' },
+  { id: 's2', name: 'Sector 2' },
 ];
 
 const initializeDb = () => {
-  if (!localStorage.getItem('securecomm_demo_v2_initialized')) {
+  if (!localStorage.getItem('securecomm_demo_v3_initialized')) {
     localStorage.setItem('phases', JSON.stringify(defaultPhases));
-    localStorage.setItem('cameras', JSON.stringify([]));
-    localStorage.setItem('securityIssues', JSON.stringify([]));
+    
+    // Add some dummy data so dashboard isn't completely empty
+    const dummyInfrastructure = [
+      { id: 'INF-101', name: 'Main Gate Light', type: 'Streetlight', phase: 'p1', location: 'Gate 1', status: 'Working' },
+      { id: 'INF-102', name: 'Park Light 1', type: 'Streetlight', phase: 'p2', location: 'Central Park', status: 'Working' },
+      { id: 'INF-103', name: 'Perimeter Light 4', type: 'Streetlight', phase: 'p1', location: 'North Wall', status: 'Faulty' },
+    ];
+    
+    const dummyExpenses = [
+      { id: 'EXP-1001', title: 'Gardening Services', category: 'Maintenance', amount: 15000, date: new Date().toISOString().split('T')[0], phase: 'All', approvedBy: 'Admin' },
+      { id: 'EXP-1002', title: 'Gate Repair', category: 'Repairs', amount: 4500, date: new Date().toISOString().split('T')[0], phase: 'p1', approvedBy: 'Admin' },
+      { id: 'EXP-1003', title: 'Security Staff Diwali Bonus', category: 'Staff', amount: 25000, date: new Date().toISOString().split('T')[0], phase: 'All', approvedBy: 'Admin' },
+    ];
+    
+    const dummyPayments = [
+      { id: 'PAY-1001', houseId: 'A-101', type: 'Maintenance', amount: 3500, date: new Date().toISOString().split('T')[0], status: 'Paid', phase: 'p1', residentName: 'Rahul Sharma' },
+      { id: 'PAY-1002', houseId: 'B-205', type: 'Maintenance', amount: 3500, date: new Date().toISOString().split('T')[0], status: 'Pending', phase: 'p2', residentName: 'Anita Desai' },
+      { id: 'PAY-1003', houseId: 'A-102', type: 'Sinking Fund', amount: 1500, date: new Date().toISOString().split('T')[0], status: 'Paid', phase: 'p1', residentName: 'Vikram Singh' },
+    ];
+
+    const dummyPatrols = [
+      { id: 'PAT-1001', guard: 'Ramu', route: 'Phase 1 Perimeter', status: 'Completed', date: new Date().toISOString().split('T')[0], time: '10:00', phase: 'p1' },
+      { id: 'PAT-1002', guard: 'Shyam', route: 'Phase 2 Internal', status: 'Completed', date: new Date().toISOString().split('T')[0], time: '12:00', phase: 'p2' },
+      { id: 'PAT-1003', guard: 'Ramu', route: 'Main Gate', status: 'Missed / Incomplete', date: new Date().toISOString().split('T')[0], time: '14:00', phase: 'All' },
+    ];
+
+    const dummyCameras = [
+      { id: 'CAM-001', name: 'Main Gate Entry', location: 'Gate 1', type: 'Bullet', status: 'Working', phase: 'p1' },
+      { id: 'CAM-002', name: 'Park Corner', location: 'Central Park', type: 'Dome', status: 'Working', phase: 'p2' },
+      { id: 'CAM-003', name: 'Basement Parking', location: 'Block A Basement', type: 'PTZ', status: 'Not Working', phase: 'p1' },
+    ];
+    
+    const dummyIssues = [
+      { id: 'ISS-101', category: 'Suspicious Activity', description: 'Unknown person wandering near Block B', priority: 'High', status: 'Open', phase: 'p2', reportedBy: 'Admin', date: new Date().toISOString().split('T')[0] }
+    ];
+
+    localStorage.setItem('cameras', JSON.stringify(dummyCameras));
+    localStorage.setItem('securityIssues', JSON.stringify(dummyIssues));
     localStorage.setItem('visitors', JSON.stringify([]));
-    localStorage.setItem('payments', JSON.stringify([]));
-    localStorage.setItem('expenses', JSON.stringify([]));
+    localStorage.setItem('payments', JSON.stringify(dummyPayments));
+    localStorage.setItem('expenses', JSON.stringify(dummyExpenses));
     localStorage.setItem('announcements', JSON.stringify([]));
-    localStorage.setItem('infrastructure', JSON.stringify([]));
+    localStorage.setItem('infrastructure', JSON.stringify(dummyInfrastructure));
     localStorage.setItem('vehicles', JSON.stringify([]));
-    localStorage.setItem('patrols', JSON.stringify([]));
+    localStorage.setItem('patrols', JSON.stringify(dummyPatrols));
+    localStorage.setItem('guards', JSON.stringify([]));
     localStorage.setItem('committee', JSON.stringify([]));
     localStorage.setItem('serviceProviders', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
-    localStorage.setItem('securecomm_demo_v2_initialized', 'true');
+    localStorage.setItem('securecomm_demo_v3_initialized', 'true');
   }
 };
 
@@ -144,6 +186,15 @@ export const localDb = {
   },
   deleteVehicle: (id) => localDb.deleteItem('vehicles', id),
 
+  getGuards: () => localDb.get('guards'),
+  addGuard: (guard) => {
+    const guards = localDb.get('guards');
+    const newGuard = { ...guard, id: `GRD-${100 + guards.length + 1}` };
+    localDb.set('guards', [newGuard, ...guards]);
+    return newGuard;
+  },
+  deleteGuard: (id) => localDb.deleteItem('guards', id),
+
   getPatrols: () => localDb.get('patrols'),
   addPatrol: (patrol) => {
     const patrols = localDb.get('patrols');
@@ -171,14 +222,26 @@ export const localDb = {
   },
   deleteServiceProvider: (id) => localDb.deleteItem('serviceProviders', id),
 
-  getDashboardStats: () => {
-    const visitors = localDb.get('visitors');
-    const cameras = localDb.get('cameras');
-    const issues = localDb.get('securityIssues');
-    const payments = localDb.get('payments');
-    const expenses = localDb.get('expenses');
-    const vehicles = localDb.get('vehicles');
-    const patrols = localDb.get('patrols');
+  getDashboardStats: (phaseFilter = 'All') => {
+    let visitors = localDb.get('visitors');
+    let cameras = localDb.get('cameras');
+    let issues = localDb.get('securityIssues');
+    let payments = localDb.get('payments');
+    let expenses = localDb.get('expenses');
+    let vehicles = localDb.get('vehicles');
+    let patrols = localDb.get('patrols');
+    let infrastructure = localDb.get('infrastructure');
+
+    if (phaseFilter !== 'All') {
+      visitors = visitors.filter(v => v.phase === phaseFilter || !v.phase);
+      cameras = cameras.filter(c => c.phase === phaseFilter);
+      issues = issues.filter(i => i.phase === phaseFilter || !i.phase);
+      payments = payments.filter(p => p.phase === phaseFilter || !p.phase);
+      expenses = expenses.filter(e => e.phase === phaseFilter || !e.phase);
+      vehicles = vehicles.filter(v => v.phase === phaseFilter || !v.phase);
+      patrols = patrols.filter(p => p.phase === phaseFilter || !p.phase);
+      infrastructure = infrastructure.filter(i => i.phase === phaseFilter || !i.phase);
+    }
 
     const activeIssues = issues.filter(i => i.status === "Open" || i.status === "In Progress").length;
     const faultyCameras = cameras.filter(c => c.status === "Not Working").length;
@@ -187,6 +250,9 @@ export const localDb = {
     const totalCollected = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + Number(p.amount), 0);
     const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
     const pendingPayments = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + Number(p.amount), 0);
+    const savingsAmount = totalCollected - totalExpenses;
+    
+    const streetLightsCount = infrastructure.filter(i => i.type === 'Streetlight').length;
 
     // Calculate dynamic 7-day visitor trend
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -237,6 +303,8 @@ export const localDb = {
       totalCollected,
       totalExpenses,
       pendingPayments,
+      savingsAmount,
+      streetLightsCount,
       visitorTrend,
       cctvTrend
     };

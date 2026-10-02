@@ -5,11 +5,14 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Car, Trash2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { phases, sectors } from "../data/mockData";
 
 export function VehiclesPage() {
+  const { phase } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '' });
+  const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
 
   useEffect(() => {
     setVehicles(localDb.getVehicles());
@@ -20,8 +23,10 @@ export function VehiclesPage() {
     localDb.addVehicle({ ...formData });
     setVehicles(localDb.getVehicles());
     setIsModalOpen(false);
-    setFormData({ number: '', owner: '', type: 'Car', houseId: '' });
+    setFormData({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
   };
+
+  const filteredVehicles = vehicles.filter(v => phase === 'All' || v.phase === phase || !v.phase);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this vehicle?")) {
@@ -41,7 +46,7 @@ export function VehiclesPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card><CardContent className="p-4 flex items-center space-x-4"><Car className="text-blue-500 w-8 h-8" /><div><p className="text-gray-500">Registered Vehicles</p><h3 className="text-2xl font-bold">{vehicles.length}</h3></div></CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center space-x-4"><Car className="text-blue-500 w-8 h-8" /><div><p className="text-gray-500">Registered Vehicles</p><h3 className="text-2xl font-bold">{filteredVehicles.length}</h3></div></CardContent></Card>
       </div>
 
       <Card>
@@ -57,7 +62,7 @@ export function VehiclesPage() {
             </tr>
           </thead>
           <tbody>
-            {vehicles.map(v => (
+            {filteredVehicles.map(v => (
               <tr key={v.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="py-3 px-6 font-bold">{v.number.toUpperCase()}</td>
                 <td className="py-3 px-6 text-sm">{v.owner}</td>
@@ -74,7 +79,7 @@ export function VehiclesPage() {
                 </td>
               </tr>
             ))}
-            {vehicles.length === 0 && <tr><td colSpan="5" className="text-center py-6 text-gray-500">No vehicles registered yet.</td></tr>}
+            {filteredVehicles.length === 0 && <tr><td colSpan="5" className="text-center py-6 text-gray-500">No vehicles found for this phase.</td></tr>}
           </tbody>
         </table>
       </Card>
@@ -84,6 +89,13 @@ export function VehiclesPage() {
           <input required placeholder="License Plate (e.g. MH12AB1234)" className="w-full border rounded p-2 uppercase" value={formData.number} onChange={e => setFormData({...formData, number: e.target.value})} />
           <input required placeholder="Owner Name" className="w-full border rounded p-2" value={formData.owner} onChange={e => setFormData({...formData, owner: e.target.value})} />
           <input required placeholder="House / Unit ID" className="w-full border rounded p-2" value={formData.houseId} onChange={e => setFormData({...formData, houseId: e.target.value})} />
+          <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+            {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
           <select className="w-full border rounded p-2" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
             <option>Car</option><option>Two-Wheeler</option><option>Commercial</option>
           </select>

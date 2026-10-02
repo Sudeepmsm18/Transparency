@@ -2,6 +2,14 @@ export const phases = [
   { id: 'p1', name: 'Phase 1', houses: 120, residents: 340 },
   { id: 'p2', name: 'Phase 2', houses: 85, residents: 210 },
   { id: 'p3', name: 'Phase 3', houses: 200, residents: 600 },
+  { id: 'p4', name: 'Phase 4', houses: 150, residents: 450 },
+  { id: 'p5', name: 'Phase 5', houses: 110, residents: 320 },
+  { id: 'p6', name: 'Phase 6', houses: 90, residents: 250 },
+];
+
+export const sectors = [
+  { id: 's1', name: 'Sector 1', houses: 60, residents: 180 },
+  { id: 's2', name: 'Sector 2', houses: 75, residents: 200 },
 ];
 
 export const cameras = [

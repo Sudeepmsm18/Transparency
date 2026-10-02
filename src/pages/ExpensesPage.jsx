@@ -4,15 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Search, Plus, Wallet, FileText, TrendingDown } from "lucide-react";
+import { Search, Plus, Wallet, FileText, TrendingDown, Trash2 } from "lucide-react";
+import { useAuth, ROLES } from "../context/AuthContext";
+import { phases, sectors } from "../data/mockData";
 
 export function ExpensesPage() {
+  const { phase, role } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [formData, setFormData] = useState({
-    title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid'
+    title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1', sector: ''
   });
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export function ExpensesPage() {
     localDb.addExpense(newExpense);
     setExpenses(localDb.getExpenses());
     setIsModalOpen(false);
-    setFormData({ title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid' });
+    setFormData({ title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1', sector: '' });
   };
 
   const getStatusBadge = (status) => {
@@ -39,13 +42,15 @@ export function ExpensesPage() {
     }
   };
 
-  const totalExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
-  const pendingExpenses = expenses.filter(e => e.status !== 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
+  const totalExpenses = expenses.filter(e => e.status === 'Paid' && (phase === 'All' || e.phase === phase || !e.phase)).reduce((sum, e) => sum + Number(e.amount), 0);
+  const pendingExpenses = expenses.filter(e => e.status !== 'Paid' && (phase === 'All' || e.phase === phase || !e.phase)).reduce((sum, e) => sum + Number(e.amount), 0);
 
-  const filteredExpenses = expenses.filter((e) => 
-    e.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    e.vendor.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredExpenses = expenses.filter((e) => {
+    const matchesSearch = e.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          e.vendor.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPhase = phase === 'All' || e.phase === phase || !e.phase;
+    return matchesSearch && matchesPhase;
+  });
 
   return (
     <div className="space-y-6">
@@ -54,7 +59,9 @@ export function ExpensesPage() {
           <h2 className="text-2xl font-bold text-gray-900">Expenses</h2>
           <p className="text-gray-500 mt-1">Track community expenses and vendor payouts</p>
         </div>
-        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Log Expense</Button>
+        {role !== ROLES.RESIDENT && (
+          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Log Expense</Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,7 +137,7 @@ export function ExpensesPage() {
               {filteredExpenses.length === 0 && (
                 <tr>
                   <td colSpan="4" className="py-8 text-center text-gray-500">
-                    No expenses logged yet.
+                    No expenses found for this phase.
                   </td>
                 </tr>
               )}
@@ -156,6 +163,21 @@ export function ExpensesPage() {
                 <option value="Other">Other</option>
               </select>
             </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Phase *</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+                {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+          </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Amount (₹) *</label>
               <input required type="number" min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} />

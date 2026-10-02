@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const ROLES = {
   SUPER_ADMIN: "Super Admin",
-  ASSOC_ADMIN: "Association Admin",
+  VOLUNTEER: "Volunteer",
   GUARD: "Security Guard",
   RESIDENT: "Community Member"
 };
@@ -15,12 +15,20 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem('securecomm_demo_role') || ROLES.SUPER_ADMIN;
   });
 
+  const [phase, setPhase] = useState(() => {
+    return localStorage.getItem('securecomm_demo_phase') || 'All';
+  });
+
   useEffect(() => {
     localStorage.setItem('securecomm_demo_role', role);
   }, [role]);
 
+  useEffect(() => {
+    localStorage.setItem('securecomm_demo_phase', phase);
+  }, [phase]);
+
   return (
-    <AuthContext.Provider value={{ role, setRole, ROLES }}>
+    <AuthContext.Provider value={{ role, setRole, ROLES, phase, setPhase }}>
       {children}
     </AuthContext.Provider>
   );

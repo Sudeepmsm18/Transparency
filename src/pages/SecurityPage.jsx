@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { phases } from "../data/mockData";
+import { phases, sectors } from "../data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Search, Plus, AlertTriangle, CheckCircle, Clock, ShieldAlert } from "lucide-react";
+import { Search, Plus, AlertTriangle, CheckCircle, Clock, ShieldAlert, Trash2 } from "lucide-react";
+import { useAuth, ROLES } from "../context/AuthContext";
 
 export function SecurityPage() {
+  const { phase, role } = useAuth();
   const [issues, setIssues] = useState([]);
+  const [patrols, setPatrols] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    category: 'Suspicious Activity', description: '', phase: 'p1', priority: 'Medium', reportedBy: 'Admin'
+    category: 'Suspicious Activity', description: '', phase: 'p1', sector: '', priority: 'Medium', reportedBy: 'Admin'
   });
 
   useEffect(() => {
     setIssues(localDb.getSecurityIssues());
+    setPatrols(localDb.getPatrols());
   }, []);
 
   const handleReportIssue = (e) => {
@@ -31,7 +35,7 @@ export function SecurityPage() {
     localDb.addSecurityIssue(newIssue);
     setIssues(localDb.getSecurityIssues());
     setIsModalOpen(false);
-    setFormData({ category: 'Suspicious Activity', description: '', phase: 'p1', priority: 'Medium', reportedBy: 'Admin' });
+    setFormData({ category: 'Suspicious Activity', description: '', phase: 'p1', sector: '', priority: 'Medium', reportedBy: 'Admin' });
   };
 
   const handleUpdateStatus = (id, newStatus) => {
@@ -39,12 +43,20 @@ export function SecurityPage() {
     setIssues(localDb.getSecurityIssues());
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this issue?")) {
+      localDb.deleteSecurityIssue(id);
+      setIssues(localDb.getSecurityIssues());
+    }
+  };
+
   const filteredIssues = issues.filter((issue) => {
     const matchesSearch = issue.category.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           issue.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "All" || issue.status === statusFilter;
     const matchesPriority = priorityFilter === "All" || issue.priority === priorityFilter;
-    return matchesSearch && matchesStatus && matchesPriority;
+    const matchesPhase = phase === "All" || issue.phase === phase;
+    return matchesSearch && matchesStatus && matchesPriority && matchesPhase;
   });
 
   const getStatusBadge = (status) => {
@@ -79,7 +91,7 @@ export function SecurityPage() {
         <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Report Issue</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center space-x-4">
             <div className="p-3 bg-red-100 rounded-lg text-red-600">
@@ -110,6 +122,19 @@ export function SecurityPage() {
             <div>
               <p className="text-sm text-gray-500 font-medium">Resolved</p>
               <h3 className="text-2xl font-bold text-gray-900">{resolvedCount}</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center space-x-4">
+            <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 font-medium">Patrol Rounds</p>
+              <h3 className="text-2xl font-bold text-gray-900">
+                {patrols.filter(p => p.status === 'Completed').length}/{patrols.length}
+              </h3>
             </div>
           </CardContent>
         </Card>
@@ -161,7 +186,7 @@ export function SecurityPage() {
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Location / Phase</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reported Info</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status & Priority</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -191,25 +216,34 @@ export function SecurityPage() {
                         {getPriorityBadge(issue.priority)}
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-right">
-                      {issue.status !== "Resolved" && (
-                        <select 
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 mr-2"
-                          onChange={(e) => handleUpdateStatus(issue.id, e.target.value)}
-                          value={issue.status}
+                    {role !== ROLES.RESIDENT && (
+                      <td className="py-4 px-6 text-right whitespace-nowrap">
+                        {issue.status !== "Resolved" && (
+                          <select 
+                            className="text-sm border border-gray-300 rounded-md px-2 py-1 mr-2"
+                            onChange={(e) => handleUpdateStatus(issue.id, e.target.value)}
+                            value={issue.status}
+                          >
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                          </select>
+                        )}
+                        <button 
+                          onClick={() => handleDelete(issue.id)}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors inline-flex align-middle"
+                          title="Delete Issue"
                         >
-                          <option value="Open">Open</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Resolved">Resolved</option>
-                        </select>
-                      )}
-                    </td>
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 )
               })}
               {filteredIssues.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="py-8 text-center text-gray-500">
+                  <td colSpan={role !== ROLES.RESIDENT ? "5" : "4"} className="py-8 text-center text-gray-500">
                     No security issues found.
                   </td>
                 </tr>
@@ -245,6 +279,13 @@ export function SecurityPage() {
             <label className="text-sm font-medium text-gray-700">Phase / Location *</label>
             <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
               {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div className="space-y-1">
