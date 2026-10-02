@@ -12,19 +12,19 @@ export const ROLES = {
 export const AuthProvider = ({ children }) => {
   // Try to load role from localStorage, default to Super Admin
   const [role, setRole] = useState(() => {
-    return localStorage.getItem('securecomm_demo_role') || ROLES.SUPER_ADMIN;
+    return localStorage.getItem('Transparency_demo_role') || ROLES.SUPER_ADMIN;
   });
 
   const [phase, setPhase] = useState(() => {
-    return localStorage.getItem('securecomm_demo_phase') || 'All';
+    return localStorage.getItem('Transparency_demo_phase') || 'All';
   });
 
   useEffect(() => {
-    localStorage.setItem('securecomm_demo_role', role);
+    localStorage.setItem('Transparency_demo_role', role);
   }, [role]);
 
   useEffect(() => {
-    localStorage.setItem('securecomm_demo_phase', phase);
+    localStorage.setItem('Transparency_demo_phase', phase);
   }, [phase]);
 
   return (

@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../utils/cn";
 import { useAuth, ROLES } from "../../context/AuthContext";
-import { 
-  LayoutDashboard, Shield, Video, MapPin, 
-  Users, Car, Building, IndianRupee, 
-  Wallet, Wrench, Bell, FileText, Settings, UserCog 
+import {
+  LayoutDashboard, Shield, Video, MapPin,
+  Users, Car, Building, IndianRupee,
+  Wallet, Wrench, Bell, FileText, Settings, UserCog
 } from "lucide-react";
 
 // Add allowedRoles to each nav item
@@ -36,7 +36,7 @@ export function Sidebar({ open, setOpen }) {
     <>
       {/* Mobile overlay */}
       {open && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"
           onClick={() => setOpen(false)}
         />
@@ -51,13 +51,13 @@ export function Sidebar({ open, setOpen }) {
       >
         <div className="flex items-center h-16 px-6 border-b border-gray-200 bg-blue-600 shrink-0">
           <Shield className="w-8 h-8 text-white mr-3" />
-          <span className="text-xl font-bold text-white tracking-tight">SecureComm</span>
+          <span className="text-xl font-bold text-white tracking-tight">Transparency</span>
         </div>
 
         <div className="overflow-y-auto flex-1 py-4">
           <nav className="space-y-1 px-3">
             {filteredNav.map((item) => {
-              const isActive = location.pathname === item.path || 
+              const isActive = location.pathname === item.path ||
                 (item.path !== "/" && location.pathname.startsWith(item.path));
               return (
                 <Link
