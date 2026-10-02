@@ -5,12 +5,12 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Search, Plus, Users, UserCheck, UserX, Clock, Phone, Car, Home } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 import { useToast } from "../context/ToastContext";
 
 export function VisitorManagementPage() {
-  const { phase } = useAuth();
+  const { phase, role } = useAuth();
   const [visitors, setVisitors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -103,10 +103,12 @@ export function VisitorManagementPage() {
           <h2 className="text-2xl font-bold text-gray-900">Visitor Management</h2>
           <p className="text-gray-500 mt-1">Track and manage visitors entering the community</p>
         </div>
-        <div className="flex space-x-2 w-full sm:w-auto">
-          <Button variant="secondary" onClick={() => setIsPreapproveModalOpen(true)}>Pre-approve</Button>
-          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Entry</Button>
-        </div>
+        {role !== ROLES.RESIDENT && (
+          <div className="flex space-x-2 w-full sm:w-auto">
+            <Button variant="secondary" onClick={() => setIsPreapproveModalOpen(true)}>Pre-approve</Button>
+            <Button icon={Plus} onClick={() => setIsModalOpen(true)}>New Entry</Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -218,12 +220,12 @@ export function VisitorManagementPage() {
                 </div>
               </div>
               
-              {v.status === "Inside" && (
+              {v.status === "Inside" && role !== ROLES.RESIDENT && (
                 <div className="mt-4 flex justify-end space-x-2">
                   <Button variant="primary" size="sm" onClick={() => handleMarkExit(v.id)}>Mark Exit</Button>
                 </div>
               )}
-              {v.status === "Pre-approved" && (
+              {v.status === "Pre-approved" && role !== ROLES.RESIDENT && (
                 <div className="mt-4 flex justify-end space-x-2">
                   <Button variant="success" size="sm" onClick={() => {
                     localDb.updateVisitor(v.id, { 
