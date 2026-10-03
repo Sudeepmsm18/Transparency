@@ -86,8 +86,14 @@ const initializeDb = () => {
     localStorage.setItem('closedHouses', JSON.stringify([]));
     localStorage.setItem('businesses', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
-    const dummyUsers = Array.from({ length: 10 }, (_, i) => ({
-      id: `USR-${101 + i}`, name: `User ${i + 1}`, role: i < 2 ? 'Volunteer' : (i < 5 ? 'Guard' : 'Community Member'), phase: i < 5 ? 'p1' : 'p2', sector: '', contact: `987654321${i}`, shift: (i >= 2 && i < 5) ? 'Day' : undefined
+    const dummyUsers = Array.from({ length: 25 }, (_, i) => ({
+      id: `USR-${101 + i}`,
+      name: `User ${i + 1}`,
+      role: i < 2 ? 'Volunteer' : (i < 12 ? 'Guard' : 'Community Member'),
+      phase: i % 2 === 0 ? 'p1' : 'p2',
+      sector: 's2',
+      contact: `987654321${i}`,
+      shift: (i >= 2 && i < 12) ? (i % 2 === 0 ? 'Day' : 'Night') : undefined
     }));
 
     localStorage.setItem('users', JSON.stringify(dummyUsers));
@@ -294,6 +300,7 @@ export const localDb = {
     let vehicles = localDb.get('vehicles');
     let patrols = localDb.get('patrols');
     let infrastructure = localDb.get('infrastructure');
+    let users = localDb.get('users');
 
     if (phaseFilter !== 'All') {
       visitors = visitors.filter(v => v.phase === phaseFilter || !v.phase);
@@ -304,6 +311,7 @@ export const localDb = {
       vehicles = vehicles.filter(v => v.phase === phaseFilter || !v.phase);
       patrols = patrols.filter(p => p.phase === phaseFilter || !p.phase);
       infrastructure = infrastructure.filter(i => i.phase === phaseFilter || !i.phase);
+      users = users.filter(u => u.phase === phaseFilter || !u.phase);
     }
 
     const activeIssues = issues.filter(i => i.status === "Open" || i.status === "In Progress").length;
@@ -368,6 +376,7 @@ export const localDb = {
       pendingPayments,
       savingsAmount,
       streetLightsCount,
+      totalGuards: users.filter(u => u.role === 'Guard').length,
       visitorTrend,
       cctvTrend
     };

@@ -51,10 +51,11 @@ export function DashboardPage() {
   }
 
   const kpiData = [
-    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/visitors" },
-    { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100", link: "/vehicles" },
-    { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100", link: "/security" },
+    { title: "Security Guards", value: stats.totalGuards, icon: ShieldCheck, color: "text-purple-600", bg: "bg-purple-100", link: "/guards" },
     { title: "CCTV Faults", value: stats.camerasNotWorking, icon: VideoOff, color: "text-orange-600", bg: "bg-orange-100", link: "/cctv" },
+    { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100", link: "/security" },
+    { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100", link: "/vehicles" },
+    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/visitors" },
     { title: "Total Collection", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
     { title: "Total Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100", link: "/expenses" },
     { title: "Savings Amount", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
