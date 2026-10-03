@@ -55,7 +55,7 @@ export function Sidebar({ open, setOpen }) {
       >
         <div className="flex items-center h-16 px-6 border-b border-gray-200 bg-blue-600 shrink-0">
           <Shield className="w-8 h-8 text-white mr-3" />
-          <span className="text-xl font-bold text-white tracking-tight">Transparency</span>
+          <span className="text-xl font-bold text-white tracking-tight">URG Transparency</span>
         </div>
 
         <div className="overflow-y-auto flex-1 py-4">

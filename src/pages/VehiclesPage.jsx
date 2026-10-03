@@ -9,7 +9,7 @@ import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function VehiclesPage() {
-  const { phase, role } = useAuth();
+  const { phase, sector, role } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
@@ -95,6 +95,10 @@ export function VehiclesPage() {
           <input required placeholder="House / Unit ID" className="w-full border rounded p-2" value={formData.houseId} onChange={e => setFormData({...formData, houseId: e.target.value})} />
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
             <option value="">None / All Sectors</option>

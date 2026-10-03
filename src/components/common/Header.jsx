@@ -3,10 +3,10 @@ import { Bell, Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./Button";
 import { useAuth, ROLES } from "../../context/AuthContext";
 import { ProfileActivityModal } from "./ProfileActivityModal";
-import { phases } from "../../data/mockData";
+import { phases, sectors } from "../../data/mockData";
 
 export function Header({ setSidebarOpen }) {
-  const { role, setRole, phase, setPhase } = useAuth();
+  const { role, setRole, phase, setPhase, sector, setSector } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -38,6 +38,22 @@ export function Header({ setSidebarOpen }) {
                   <option value="All">All Phases</option>
                   {phases.map(p => (
                     <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            {role === ROLES.VOLUNTEER && (
+              <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 hidden sm:flex">
+                <span className="text-xs text-gray-500 mr-2 font-medium uppercase tracking-wider">Sector:</span>
+                <select 
+                  className="bg-transparent text-xs sm:text-sm font-medium text-gray-900 outline-none cursor-pointer"
+                  value={sector}
+                  onChange={(e) => setSector(e.target.value)}
+                >
+                  <option value="All">All Sectors</option>
+                  {sectors.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
               </div>

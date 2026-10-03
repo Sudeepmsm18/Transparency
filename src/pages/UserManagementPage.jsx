@@ -14,7 +14,7 @@ export function UserManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roleFilter, setRoleFilter] = useState("All");
   const [formData, setFormData] = useState({ name: '', role: 'Community Member', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
-  const { role, phase } = useAuth();
+  const { role, phase, sector } = useAuth();
   const { addToast } = useToast();
   
   // Only Super Admin can view/add users
@@ -170,6 +170,10 @@ export function UserManagementPage() {
               <select className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
                 {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>

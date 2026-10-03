@@ -7,7 +7,7 @@ import { User } from "lucide-react";
 
 export function VolunteersPage() {
   const [volunteers, setVolunteers] = useState([]);
-  const { phase } = useAuth();
+  const { phase, sector } = useAuth();
 
   useEffect(() => {
     const allUsers = localDb.getUsers();

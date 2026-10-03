@@ -13,7 +13,7 @@ export function ClosedHousesPage() {
   const [closedHouses, setClosedHouses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ purpose: '', fromDate: '', toDate: '', emergencyContact: '' });
-  const { role, phase } = useAuth();
+  const { role, phase, sector } = useAuth();
   const { addToast } = useToast();
 
   useEffect(() => {

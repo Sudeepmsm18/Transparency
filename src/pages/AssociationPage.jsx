@@ -12,7 +12,7 @@ export function AssociationPage() {
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
-  const { phase, role } = useAuth();
+  const { phase, sector, role } = useAuth();
 
   useEffect(() => {
     setMembers(localDb.getCommittee());
@@ -82,6 +82,10 @@ export function AssociationPage() {
           </select>
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
             <option value="">None / All Sectors</option>

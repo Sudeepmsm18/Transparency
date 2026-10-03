@@ -9,7 +9,7 @@ import { useAuth, ROLES } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function InfrastructurePage() {
-  const { phase, role } = useAuth();
+  const { phase, sector, role } = useAuth();
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', type: 'Water Pump', location: '', phase: 'p1', sector: '' });
@@ -114,6 +114,10 @@ export function InfrastructurePage() {
           </select>
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
             <option value="">None / All Sectors</option>

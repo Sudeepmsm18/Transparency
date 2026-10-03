@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/common/C
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
-import { Search, Plus, AlertTriangle, CheckCircle, Clock, ShieldAlert, Trash2 } from "lucide-react";
+import { MessageSquare, Search, Plus, AlertTriangle, CheckCircle, Clock, ShieldAlert, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
 
 export function SecurityPage() {
-  const { phase, role } = useAuth();
+  const { phase, sector, role } = useAuth();
   const [issues, setIssues] = useState([]);
   const [patrols, setPatrols] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +19,9 @@ export function SecurityPage() {
   const [formData, setFormData] = useState({
     category: 'Suspicious Activity', description: '', phase: 'p1', sector: '', priority: 'Medium', reportedBy: 'Admin'
   });
+  const [replyModalOpen, setReplyModalOpen] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [replyIssueId, setReplyIssueId] = useState(null);
 
   useEffect(() => {
     setIssues(localDb.getSecurityIssues());
@@ -49,6 +52,14 @@ export function SecurityPage() {
       setIssues(localDb.getSecurityIssues());
     }
   };
+  const handleReplySubmit = (e) => {
+    e.preventDefault();
+    localDb.updateSecurityIssue(replyIssueId, { volunteerReply: replyText });
+    setIssues(localDb.getSecurityIssues());
+    setReplyModalOpen(false);
+    setReplyText("");
+    setReplyIssueId(null);
+  };
 
   const filteredIssues = issues.filter((issue) => {
     const matchesSearch = issue.category.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -56,7 +67,8 @@ export function SecurityPage() {
     const matchesStatus = statusFilter === "All" || issue.status === statusFilter;
     const matchesPriority = priorityFilter === "All" || issue.priority === priorityFilter;
     const matchesPhase = phase === "All" || issue.phase === phase;
-    return matchesSearch && matchesStatus && matchesPriority && matchesPhase;
+    const matchesSector = sector === "All" || !issue.sector || issue.sector === sector;
+    return matchesSearch && matchesStatus && matchesPriority && matchesPhase && matchesSector;
   });
 
   const getStatusBadge = (status) => {
@@ -201,10 +213,19 @@ export function SecurityPage() {
                       <div className="text-sm text-gray-500 mt-1 max-w-xs truncate" title={issue.description}>
                         {issue.description}
                       </div>
+                      {issue.volunteerReply && (
+                        <div className="mt-2 bg-blue-50 border-l-2 border-blue-500 p-2 text-xs text-gray-700 rounded-r">
+                          <span className="font-semibold text-blue-800">Reply: </span>
+                          {issue.volunteerReply}
+                        </div>
+                      )}
                       <div className="text-xs text-gray-400 mt-1">{issue.id}</div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-gray-900 font-medium">{phase?.name}</div>
+                      <div className="text-gray-900 font-medium">
+                        {phase?.name}
+                        {issue.sector && <span className="ml-1 text-gray-500">/ {sectors.find(s => s.id === issue.sector)?.name || issue.sector}</span>}
+                      </div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="text-sm text-gray-900">{issue.reportedBy}</div>
@@ -230,6 +251,15 @@ export function SecurityPage() {
                             <option value="In Progress">In Progress</option>
                             <option value="Resolved">Resolved</option>
                           </select>
+                        )}
+                        {(role === ROLES.VOLUNTEER || role === ROLES.GUARD) && (
+                           <button
+                             onClick={() => { setReplyIssueId(issue.id); setReplyText(issue.volunteerReply || ""); setReplyModalOpen(true); }}
+                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors inline-flex align-middle mr-2"
+                             title="Reply"
+                           >
+                             <MessageSquare className="w-4 h-4" />
+                           </button>
                         )}
                         <button 
                           onClick={() => handleDelete(issue.id)}
@@ -290,6 +320,13 @@ export function SecurityPage() {
               {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+              <option value="">None / All Sectors</option>
+              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Description *</label>
             <textarea required rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Provide details about the issue..."></textarea>
@@ -297,6 +334,19 @@ export function SecurityPage() {
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
             <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button type="submit">Report Issue</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={replyModalOpen} onClose={() => setReplyModalOpen(false)} title="Reply to Issue">
+        <form onSubmit={handleReplySubmit} className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Your Reply *</label>
+            <textarea required rows={4} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Type your response..."></textarea>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+            <Button variant="secondary" type="button" onClick={() => setReplyModalOpen(false)}>Cancel</Button>
+            <Button type="submit">Submit Reply</Button>
           </div>
         </form>
       </Modal>

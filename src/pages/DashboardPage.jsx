@@ -15,7 +15,7 @@ import {
 } from "recharts";
 
 export function DashboardPage() {
-  const { phase } = useAuth();
+  const { phase, sector } = useAuth();
   const [stats, setStats] = useState(null);
   const [recentIssues, setRecentIssues] = useState([]);
   const [recentAnnouncements, setRecentAnnouncements] = useState([]);

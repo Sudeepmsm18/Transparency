@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { phases, sectors } from "../data/mockData";
 
 export function PatrolsPage() {
-  const { phase } = useAuth();
+  const { phase, sector } = useAuth();
   const [patrols, setPatrols] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -81,6 +81,10 @@ export function PatrolsPage() {
           <input required placeholder="Route (e.g. Peripheral, Phase 1)" className="w-full border rounded p-2" value={formData.route} onChange={e => setFormData({...formData, route: e.target.value})} />
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+            <option value="">None / All Sectors</option>
+            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
             <option value="">None / All Sectors</option>

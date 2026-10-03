@@ -8,7 +8,7 @@ import { phases } from "../data/mockData";
 
 export function GuardsPage() {
   const [guards, setGuards] = useState([]);
-  const { phase } = useAuth();
+  const { phase, sector } = useAuth();
 
   useEffect(() => {
     const allUsers = localDb.getUsers();
