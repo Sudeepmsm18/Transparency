@@ -11,7 +11,7 @@ const defaultPhases = [
 ];
 
 const initializeDb = () => {
-  if (!localStorage.getItem('Transparency_demo_v8_initialized')) {
+  if (!localStorage.getItem('Transparency_demo_v11_initialized')) {
     localStorage.setItem('phases', JSON.stringify(defaultPhases));
 
     // Add some dummy data so dashboard isn't completely empty
@@ -67,9 +67,13 @@ const initializeDb = () => {
       id: `COM-${101 + i}`, name: `Committee Member ${i + 1}`, role: i === 0 ? 'President' : (i === 1 ? 'Secretary' : 'Member'), contact: `998877665${i}`, phase: i < 5 ? 'p1' : 'p2', sector: ''
     }));
 
-    const dummyServiceProviders = Array.from({ length: 12 }, (_, i) => ({
-      id: `SRV-${101 + i}`, name: `Provider ${i + 1}`, serviceType: i % 3 === 0 ? 'Plumber' : (i % 2 === 0 ? 'Electrician' : 'Maid'), contact: `987654321${i}`, verified: i % 4 !== 0, phase: 'All'
-    }));
+    const dummyServiceProviders = [
+      { id: 'SRV-101', name: 'Ramesh (Tank Cleaner)', serviceType: 'Tank Cleaner', contact: '9876543210', verified: true, phase: 'All' },
+      { id: 'SRV-102', name: 'Suresh (Garden Cleaning)', serviceType: 'Garden Cleaning', contact: '9876543211', verified: true, phase: 'All' },
+      { id: 'SRV-103', name: 'Mahesh (Electrician)', serviceType: 'Electrician', contact: '9876543212', verified: true, phase: 'All' },
+      { id: 'SRV-104', name: 'Kamlesh (Plumber)', serviceType: 'Plumber', contact: '9876543213', verified: false, phase: 'All' },
+      { id: 'SRV-105', name: 'Gita (Maid)', serviceType: 'Maid', contact: '9876543214', verified: true, phase: 'All' }
+    ];
 
     localStorage.setItem('cameras', JSON.stringify(dummyCameras));
     localStorage.setItem('securityIssues', JSON.stringify(dummyIssues));
@@ -97,7 +101,7 @@ const initializeDb = () => {
     }));
 
     localStorage.setItem('users', JSON.stringify(dummyUsers));
-    localStorage.setItem('Transparency_demo_v8_initialized', 'true');
+    localStorage.setItem('Transparency_demo_v11_initialized', 'true');
   }
 };
 
@@ -377,6 +381,8 @@ export const localDb = {
       savingsAmount,
       streetLightsCount,
       totalGuards: users.filter(u => u.role === 'Guard').length,
+      totalVolunteers: users.filter(u => u.role === 'Volunteer').length,
+      totalServices: localDb.get('serviceProviders').length,
       visitorTrend,
       cctvTrend
     };

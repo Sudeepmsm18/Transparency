@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Car, ShieldAlert, VideoOff, 
-  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp 
+  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench 
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
@@ -55,10 +55,12 @@ export function DashboardPage() {
     { title: "CCTV Faults", value: stats.camerasNotWorking, icon: VideoOff, color: "text-orange-600", bg: "bg-orange-100", link: "/cctv" },
     { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100", link: "/security" },
     { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100", link: "/vehicles" },
-    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/visitors" },
-    { title: "Total Collection", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
-    { title: "Total Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100", link: "/expenses" },
-    { title: "Savings Amount", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
+    { title: "Amount Collected", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
+    { title: "Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100", link: "/expenses" },
+    { title: "Savings", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
+    { title: "Volunteers", value: stats.totalVolunteers, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/volunteers" },
+    { title: "Services", value: stats.totalServices, icon: Wrench, color: "text-cyan-600", bg: "bg-cyan-100", link: "/services" },
+    { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-gray-600", bg: "bg-gray-100", link: "/visitors" },
     { title: "Street Lights", value: stats.streetLightsCount, icon: Lightbulb, color: "text-yellow-600", bg: "bg-yellow-100", link: "/infrastructure" },
   ];
 

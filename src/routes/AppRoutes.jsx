@@ -19,6 +19,7 @@ import { UserManagementPage } from "../pages/UserManagementPage";
 import { GuardsPage } from "../pages/GuardsPage";
 import { ClosedHousesPage } from "../pages/ClosedHousesPage";
 import { ResidentBusinessesPage } from "../pages/ResidentBusinessesPage";
+import { VolunteersPage } from "../pages/VolunteersPage";
 
 export function AppRoutes() {
   return (
@@ -42,6 +43,7 @@ export function AppRoutes() {
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="users" element={<UserManagementPage />} />
+        <Route path="volunteers" element={<VolunteersPage />} />
       </Route>
     </Routes>
   );

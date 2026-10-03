@@ -16,6 +16,7 @@ const navItems = [
   { name: "Visitors", path: "/visitors", icon: Users, roles: [ROLES.GUARD, ROLES.VOLUNTEER] },
   { name: "Vehicles", path: "/vehicles", icon: Car, roles: [ROLES.GUARD, ROLES.VOLUNTEER] },
   { name: "Security Guards", path: "/guards", icon: Shield, roles: Object.values(ROLES) },
+  { name: "Volunteers", path: "/volunteers", icon: Users, roles: Object.values(ROLES) },
   { name: "Guard Rounds", path: "/patrols", icon: Shield, roles: [ROLES.VOLUNTEER, ROLES.GUARD] },
   { name: "Association", path: "/association", icon: Building, roles: [ROLES.VOLUNTEER] },
   { name: "Payments", path: "/payments", icon: IndianRupee, roles: [ROLES.VOLUNTEER, ROLES.RESIDENT] },
