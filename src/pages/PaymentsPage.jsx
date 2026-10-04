@@ -5,7 +5,7 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
-import { Search, Plus, IndianRupee, CreditCard, Receipt } from "lucide-react";
+import { Search, Plus, IndianRupee, Receipt } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
 import { phases } from "../data/mockData";
 

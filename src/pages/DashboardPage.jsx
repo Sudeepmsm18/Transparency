@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Users, Car, ShieldAlert, VideoOff,
-  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench, Footprints
+  Users, Car, ShieldAlert, VideoOff, ShieldCheck, IndianRupee, Lightbulb, TrendingUp, Wrench, Footprints
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";

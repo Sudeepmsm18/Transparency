@@ -80,7 +80,6 @@ export function VisitorManagementPage() {
                           v.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "All" || v.status === statusFilter;
     const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
-    const matchesSector = sector === "All" || !v.sector || v.sector === sector;
     return matchesSearch && matchesStatus && matchesPhase;
   });
 
@@ -96,7 +95,6 @@ export function VisitorManagementPage() {
 
   const phaseSectorVisitors = visitors.filter((v) => {
     const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
-    const matchesSector = sector === "All" || !v.sector || v.sector === sector;
     return matchesPhase;
   });
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/common/Card";
+import { Card } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";

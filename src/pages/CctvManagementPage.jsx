@@ -52,7 +52,6 @@ export function CctvManagementPage() {
                           cam.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "All" || cam.status === statusFilter;
     const matchesPhase = phase === "All" || cam.phase === phase;
-    const matchesSector = sector === "All" || !cam.sector || cam.sector === sector;
     return matchesSearch && matchesStatus && matchesPhase;
   });
 

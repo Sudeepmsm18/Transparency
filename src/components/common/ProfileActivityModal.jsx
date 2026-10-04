@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../../services/localDb";
 import { Modal } from "./Modal";
-import { User, Activity, AlertTriangle, Users, MapPin, IndianRupee } from "lucide-react";
+import { User, Activity, AlertTriangle, Users, IndianRupee } from "lucide-react";
 
 export function ProfileActivityModal({ isOpen, onClose, userName, role }) {
   const [activities, setActivities] = useState({

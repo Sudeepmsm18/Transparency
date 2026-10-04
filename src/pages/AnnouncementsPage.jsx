@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
+import { Card, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { Search, Plus, Bell, Megaphone, Calendar, Users } from "lucide-react";
+import { Search, Plus, Megaphone, Calendar, Users } from "lucide-react";
 
 export function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState([]);

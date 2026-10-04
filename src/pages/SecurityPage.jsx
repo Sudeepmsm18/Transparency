@@ -67,7 +67,6 @@ export function SecurityPage() {
     const matchesStatus = statusFilter === "All" || issue.status === statusFilter;
     const matchesPriority = priorityFilter === "All" || issue.priority === priorityFilter;
     const matchesPhase = phase === "All" || issue.phase === phase;
-    const matchesSector = sector === "All" || !issue.sector || issue.sector === sector;
     return matchesSearch && matchesStatus && matchesPriority && matchesPhase;
   });
 

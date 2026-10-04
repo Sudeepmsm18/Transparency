@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import { useAuth, ROLES } from "../context/AuthContext";
 import { MainLayout } from "../layouts/MainLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 import { CctvManagementPage } from "../pages/CctvManagementPage";

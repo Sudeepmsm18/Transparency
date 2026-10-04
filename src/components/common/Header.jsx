@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Bell, Menu, User, ChevronDown } from "lucide-react";
-import { Button } from "./Button";
+import { Bell, Menu, User } from "lucide-react";
 import { useAuth, ROLES } from "../../context/AuthContext";
 import { ProfileActivityModal } from "./ProfileActivityModal";
 import { phases } from "../../data/mockData";
