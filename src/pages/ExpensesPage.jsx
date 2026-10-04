@@ -169,13 +169,7 @@ export function ExpensesPage() {
                 {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
           </div>
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          </div>
+
           <div className="space-y-1 mt-4">
             <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
             <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>

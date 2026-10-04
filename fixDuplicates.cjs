@@ -8,4 +8,5 @@ files.forEach(file => {
   content = content.replace(/sector: '', sector: ''/g, "sector: ''");
   fs.writeFileSync(path.join(dir, file), content);
 });
+
 console.log('Duplicates removed');
