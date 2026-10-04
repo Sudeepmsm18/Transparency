@@ -10,7 +10,7 @@ import {
 // Add allowedRoles to each nav item
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard, roles: Object.values(ROLES) },
-  { name: "Issues", path: "/security", icon: Shield, roles: [ROLES.VOLUNTEER, ROLES.GUARD, ROLES.RESIDENT] },
+  { name: "Complains", path: "/security", icon: Shield, roles: [ROLES.VOLUNTEER, ROLES.GUARD, ROLES.RESIDENT] },
   { name: "CCTV Cameras", path: "/cctv", icon: Video, roles: [ROLES.VOLUNTEER, ROLES.RESIDENT] },
   { name: "Street Lights", path: "/infrastructure", icon: MapPin, roles: [ROLES.VOLUNTEER] },
   { name: "Visitors", path: "/visitors", icon: Users, roles: [ROLES.GUARD, ROLES.VOLUNTEER] },

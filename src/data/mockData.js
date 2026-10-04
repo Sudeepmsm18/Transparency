@@ -58,7 +58,7 @@ export const cameras = [
 
 export const securityIssues = [
   { id: 'ISS-101', category: 'Trespassing', description: 'Unauthorized person near Phase 2 boundary', phase: 'p2', priority: 'High', status: 'In Progress', reportedBy: 'Guard Smith', date: '2023-10-25' },
-  { id: 'ISS-102', category: 'Vandalism', description: 'Broken street light at Sector A', phase: 'p1', priority: 'Medium', status: 'Open', reportedBy: 'Resident John', date: '2023-10-26' },
+  { id: 'ISS-102', category: 'Vandalism', description: 'Broken street light at Sector A', phase: 'p1', priority: 'Medium', status: 'Open', reportedBy: 'Aarav Patel', date: '2023-10-26' },
   { id: 'ISS-103', category: 'Suspicious Activity', description: 'Vehicle parked for 3 days at empty plot', phase: 'p3', priority: 'Low', status: 'Resolved', reportedBy: 'Guard Alan', date: '2023-10-20' },
 ];
 
@@ -69,9 +69,9 @@ export const visitors = [
 ];
 
 export const payments = [
-  { id: 'PAY-001', resident: 'John Doe', house: 'P1-104', phase: 'p1', period: 'Oct 2023', amountDue: 1500, amountPaid: 1500, status: 'Paid', date: '2023-10-05' },
-  { id: 'PAY-002', resident: 'Jane Smith', house: 'P2-45', phase: 'p2', period: 'Oct 2023', amountDue: 1500, amountPaid: 0, status: 'Overdue', date: null },
-  { id: 'PAY-003', resident: 'Bob Johnson', house: 'P3-200', phase: 'p3', period: 'Oct 2023', amountDue: 1500, amountPaid: 500, status: 'Partially Paid', date: '2023-10-10' },
+  { id: 'PAY-001', resident: 'Aarav Patel', house: 'P1-104', phase: 'p1', period: 'Oct 2023', amountDue: 1500, amountPaid: 1500, status: 'Paid', date: '2023-10-05' },
+  { id: 'PAY-002', resident: 'Diya Sharma', house: 'P2-45', phase: 'p2', period: 'Oct 2023', amountDue: 1500, amountPaid: 0, status: 'Overdue', date: null },
+  { id: 'PAY-003', resident: 'Rohan Verma', house: 'P3-200', phase: 'p3', period: 'Oct 2023', amountDue: 1500, amountPaid: 500, status: 'Partially Paid', date: '2023-10-10' },
 ];
 
 export const expenses = [

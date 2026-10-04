@@ -31,6 +31,8 @@ export function PaymentsPage() {
     e.preventDefault();
     const newPayment = {
       ...formData,
+      houseId: role === ROLES.RESIDENT ? "My House" : formData.houseId,
+      ownerName: role === ROLES.RESIDENT ? "Self" : formData.ownerName,
       date: new Date().toISOString().split('T')[0]
     };
     localDb.addPayment(newPayment);
@@ -41,6 +43,12 @@ export function PaymentsPage() {
     addToast(`WhatsApp receipt sent to ${formData.ownerName}.`, 'whatsapp');
 
     setFormData({ houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1', sector: '' });
+  };
+
+  const handlePayNow = (payment) => {
+    localDb.updatePayment(payment.id, { status: 'Paid', date: new Date().toISOString().split('T')[0] });
+    setPayments(localDb.getPayments());
+    addToast(`Payment of ₹${payment.amount} completed successfully via UPI.`, 'success');
   };
 
   const handlePhotoUpload = (e) => {
@@ -57,7 +65,8 @@ export function PaymentsPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "Paid": return <Badge variant="success">Paid</Badge>;
-      case "Pending": return <Badge variant="warning">Pending</Badge>;
+      case "Pending": return <Badge variant="warning">Unpaid</Badge>;
+      case "Unpaid": return <Badge variant="warning">Unpaid</Badge>;
       case "Overdue": return <Badge variant="danger">Overdue</Badge>;
       default: return <Badge>{status}</Badge>;
     }
@@ -83,9 +92,9 @@ export function PaymentsPage() {
           <h2 className="text-2xl font-bold text-gray-900">Payments & Collection</h2>
           <p className="text-gray-500 mt-1">Manage maintenance fees and association collections</p>
         </div>
-        {role !== ROLES.RESIDENT && (
-          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Record Payment</Button>
-        )}
+        <Button icon={Plus} onClick={() => setIsModalOpen(true)}>
+          {role === ROLES.RESIDENT ? "Pay Amount" : "Record Payment"}
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -95,7 +104,7 @@ export function PaymentsPage() {
               <IndianRupee className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Total Collected</p>
+              <p className="text-sm text-gray-500 font-medium">Paid</p>
               <h3 className="text-2xl font-bold text-gray-900">₹{totalCollected.toLocaleString()}</h3>
             </div>
           </CardContent>
@@ -106,7 +115,7 @@ export function PaymentsPage() {
               <Receipt className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Pending Dues</p>
+              <p className="text-sm text-gray-500 font-medium">Unpaid</p>
               <h3 className="text-2xl font-bold text-gray-900">₹{pendingAmount.toLocaleString()}</h3>
             </div>
           </CardContent>
@@ -134,7 +143,7 @@ export function PaymentsPage() {
             >
               <option value="All">All Status</option>
               <option value="Paid">Paid</option>
-              <option value="Unpaid">Unpaid / Pending</option>
+              <option value="Unpaid">Unpaid</option>
             </select>
           </div>
         </CardHeader>
@@ -142,26 +151,32 @@ export function PaymentsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-y border-gray-200">
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">House / Owner</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Serial No</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">House Owner Name</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Villa</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Purpose & Date</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Paid / Unpaid</th>
                 {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredPayments.map((payment) => (
+              {filteredPayments.map((payment, index) => (
                 <tr key={payment.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6">
-                    <div className="font-medium text-gray-900">{payment.houseId}</div>
-                    <div className="text-sm text-gray-500">{payment.ownerName}</div>
+                  <td className="py-4 px-6 text-sm text-gray-900 font-medium">
+                    {index + 1}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-900">
+                    {payment.ownerName || payment.residentName}
+                  </td>
+                  <td className="py-4 px-6 font-medium text-gray-900">
+                    {payment.houseId}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-900">
+                    {payment.date || '-'}
                   </td>
                   <td className="py-4 px-6 font-medium text-gray-900">
                     ₹{Number(payment.amount).toLocaleString()}
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{payment.purpose}</div>
-                    <div className="text-xs text-gray-500">{payment.date} via {payment.method}</div>
                   </td>
                   <td className="py-4 px-6">
                     {getStatusBadge(payment.status)}
@@ -183,7 +198,7 @@ export function PaymentsPage() {
               ))}
               {filteredPayments.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="py-8 text-center text-gray-500">
+                  <td colSpan="7" className="py-8 text-center text-gray-500">
                     No payments found for this phase.
                   </td>
                 </tr>
@@ -195,16 +210,22 @@ export function PaymentsPage() {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Record Payment">
         <form onSubmit={handleAddPayment} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">House ID *</label>
-              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.houseId} onChange={e => setFormData({...formData, houseId: e.target.value})} placeholder="e.g. P1-104" />
+          {role === ROLES.RESIDENT ? (
+            <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm mb-4">
+               You are paying dues for your registered house.
             </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Owner Name *</label>
-              <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} />
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">House ID *</label>
+                <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.houseId} onChange={e => setFormData({...formData, houseId: e.target.value})} placeholder="e.g. P1-104" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">Owner Name *</label>
+                <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} />
+              </div>
             </div>
-          </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Amount (₹) *</label>

@@ -17,8 +17,9 @@ export function PatrolsPage() {
   const now = new Date();
   const defaultDate = now.toISOString().split('T')[0];
   const defaultTime = now.toTimeString().slice(0, 5);
+  const oneHourLater = new Date(now.getTime() + 60*60*1000).toTimeString().slice(0, 5);
 
-  const [formData, setFormData] = useState({ guard: '', route: '', status: 'Completed', notes: '', date: defaultDate, time: defaultTime, phase: 'p1', sector: '' });
+  const [formData, setFormData] = useState({ guard: '', route: '', status: 'Completed', notes: '', date: defaultDate, startTime: defaultTime, endTime: oneHourLater, phase: 'p1', sector: '' });
 
   useEffect(() => {
     setPatrols(localDb.getPatrols());
@@ -31,7 +32,9 @@ export function PatrolsPage() {
     setIsModalOpen(false);
     
     const now = new Date();
-    setFormData({ guard: '', route: '', status: 'Completed', notes: '', date: now.toISOString().split('T')[0], time: now.toTimeString().slice(0, 5), phase: 'p1', sector: '' });
+    const defaultTime = now.toTimeString().slice(0, 5);
+    const oneHourLater = new Date(now.getTime() + 60*60*1000).toTimeString().slice(0, 5);
+    setFormData({ guard: '', route: '', status: 'Completed', notes: '', date: now.toISOString().split('T')[0], startTime: defaultTime, endTime: oneHourLater, phase: 'p1', sector: '' });
   };
 
   const filteredPatrols = patrols.filter(p => phase === 'All' || p.phase === phase || !p.phase);
@@ -51,18 +54,27 @@ export function PatrolsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50 border-y border-gray-200">
-              <th className="py-3 px-6 text-xs text-gray-500">Date & Time</th>
-              <th className="py-3 px-6 text-xs text-gray-500">Guard</th>
-              <th className="py-3 px-6 text-xs text-gray-500">Route / Area</th>
-              <th className="py-3 px-6 text-xs text-gray-500">Status</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time (From - To)</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Guard</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Route / Area</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Phase / Sector</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
           <tbody>
             {filteredPatrols.map(p => (
               <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="py-3 px-6 text-sm">{p.date} {p.time}</td>
+                <td className="py-3 px-6 text-sm">{p.date}</td>
+                <td className="py-3 px-6 text-sm whitespace-nowrap">{p.startTime || p.time} - {p.endTime || 'Ongoing'}</td>
                 <td className="py-3 px-6 font-medium">{p.guard}</td>
                 <td className="py-3 px-6 text-sm">{p.route}</td>
+                <td className="py-4 px-6">
+                  <div className="text-gray-900 font-medium">
+                    {phases.find(ph => ph.id === p.phase)?.name}
+                    {p.sector && <span className="ml-1 text-gray-500">/ {sectors.find(s => s.id === p.sector)?.name || p.sector}</span>}
+                  </div>
+                </td>
                 <td className="py-3 px-6 text-sm"><Badge variant={p.status === 'Completed' ? 'success' : 'danger'}>{p.status}</Badge></td>
               </tr>
             ))}
@@ -74,19 +86,18 @@ export function PatrolsPage() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Log Guard Round">
         <form onSubmit={handleAdd} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <input required type="date" className="w-full border rounded p-2" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
-            <input required type="time" className="w-full border rounded p-2" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} />
+            <input required type="date" className="w-full border rounded p-2 text-sm" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+            <div className="flex space-x-2">
+              <input required type="time" title="Start Time" className="w-full border rounded p-2 text-sm" value={formData.startTime} onChange={e => setFormData({...formData, startTime: e.target.value})} />
+              <input required type="time" title="End Time" className="w-full border rounded p-2 text-sm" value={formData.endTime} onChange={e => setFormData({...formData, endTime: e.target.value})} />
+            </div>
           </div>
-          <input required placeholder="Guard Name" className="w-full border rounded p-2" value={formData.guard} onChange={e => setFormData({...formData, guard: e.target.value})} />
-          <input required placeholder="Route (e.g. Peripheral, Phase 1)" className="w-full border rounded p-2" value={formData.route} onChange={e => setFormData({...formData, route: e.target.value})} />
-          <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+          <input required placeholder="Guard Name" className="w-full border rounded p-2 text-sm" value={formData.guard} onChange={e => setFormData({...formData, guard: e.target.value})} />
+          <input required placeholder="Route (e.g. Peripheral, Phase 1)" className="w-full border rounded p-2 text-sm" value={formData.route} onChange={e => setFormData({...formData, route: e.target.value})} />
+          <select className="w-full border rounded p-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
+          <select className="w-full border rounded p-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
             <option value="">None / All Sectors</option>
             {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>

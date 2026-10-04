@@ -11,7 +11,7 @@ const defaultPhases = [
 ];
 
 const initializeDb = () => {
-  if (!localStorage.getItem('Transparency_demo_v11_initialized')) {
+  if (!localStorage.getItem('Transparency_demo_v17_initialized')) {
     localStorage.setItem('phases', JSON.stringify(defaultPhases));
 
     // Add some dummy data so dashboard isn't completely empty
@@ -29,12 +29,14 @@ const initializeDb = () => {
       id: `EXP-${1000 + i}`, title: `Maintenance Work ${i + 1}`, category: i % 2 === 0 ? 'Maintenance' : 'Repairs', amount: 5000 + (i * 1500), date: new Date().toISOString().split('T')[0], phase: i < 5 ? 'p1' : 'p2', approvedBy: 'Admin'
     }));
 
+    const indianNames = ['Aarav Patel', 'Diya Sharma', 'Rohan Verma', 'Ananya Gupta', 'Vikram Singh', 'Priya Reddy', 'Arjun Kumar', 'Kavya Rao', 'Siddharth Desai', 'Neha Joshi', 'Aditya Iyer', 'Pooja Nair', 'Karan Mehta', 'Riya Chawla', 'Rahul Menon'];
+
     const dummyPayments = Array.from({ length: 15 }, (_, i) => ({
-      id: `PAY-${1000 + i}`, houseId: `A-${100 + i}`, type: 'Maintenance', amount: 3500, date: new Date().toISOString().split('T')[0], status: i % 3 === 0 ? 'Pending' : 'Paid', phase: i < 7 ? 'p1' : 'p2', residentName: `Resident ${i + 1}`
+      id: `PAY-${1000 + i}`, houseId: `A-${100 + i}`, type: 'Maintenance', amount: 3500, date: new Date().toISOString().split('T')[0], status: i % 3 === 0 ? 'Pending' : 'Paid', phase: i < 7 ? 'p1' : 'p2', residentName: indianNames[i % indianNames.length]
     }));
 
     const dummyPatrols = Array.from({ length: 10 }, (_, i) => ({
-      id: `PAT-${1000 + i}`, guard: i % 2 === 0 ? 'Ramu' : 'Shyam', route: `Route ${i + 1}`, status: i === 9 ? 'Missed / Incomplete' : 'Completed', date: new Date().toISOString().split('T')[0], time: `${10 + i}:00`, phase: i < 5 ? 'p1' : 'p2'
+      id: `PAT-${1000 + i}`, guard: i % 2 === 0 ? 'Ramu' : 'Shyam', route: `Route ${i + 1}`, status: i === 9 ? 'Missed / Incomplete' : 'Completed', date: new Date().toISOString().split('T')[0], startTime: `${10 + i}:00`, endTime: `${11 + i}:00`, phase: i < 5 ? 'p1' : 'p2'
     }));
 
     // Generate 40 cameras: 35 working, 5 faulty
@@ -52,7 +54,7 @@ const initializeDb = () => {
     }));
 
     const dummyVisitors = Array.from({ length: 12 }, (_, i) => ({
-      id: `V-${1000 + i}`, name: `Visitor ${i + 1}`, mobile: `987654321${i}`, hostHouse: `A-${101 + i}`, purpose: i % 2 === 0 ? 'Delivery' : 'Guest', vehicleNumber: i % 3 === 0 ? '' : `KA-01-AB-123${i}`, gate: 'Main gate', phase: i < 6 ? 'p1' : 'p2', sector: 's1', entryTime: `10:${10 + i}`, exitTime: i < 5 ? null : `11:${10 + i}`, status: i < 5 ? 'Inside' : (i === 11 ? 'Pre-approved' : 'Exited')
+      id: `V-${1000 + i}`, name: `Visitor ${i + 1}`, mobile: `987654321${i}`, hostHouse: `A-${101 + i}`, purpose: i % 2 === 0 ? 'Delivery' : 'Guest', vehicleNumber: i % 3 === 0 ? '' : `KA-01-AB-123${i}`, gate: 'Main gate', phase: i < 6 ? 'p1' : 'p2', sector: 's2', entryTime: `10:${10 + i}`, exitTime: i < 5 ? null : `11:${10 + i}`, status: i < 5 ? 'Inside' : (i === 11 ? 'Pre-approved' : 'Exited')
     }));
 
     const dummyAnnouncements = Array.from({ length: 10 }, (_, i) => ({
@@ -60,11 +62,11 @@ const initializeDb = () => {
     }));
 
     const dummyVehicles = Array.from({ length: 12 }, (_, i) => ({
-      id: `VEH-${1000 + i}`, owner: `Owner ${i + 1}`, houseId: `A-${101 + i}`, type: i % 2 === 0 ? 'Car' : 'Two-Wheeler', number: `KA-0${i}-XY-123${i}`, makeModel: i % 2 === 0 ? 'Honda City' : 'Activa', phase: i < 6 ? 'p1' : 'p2', sector: 's1', date: new Date().toISOString().split('T')[0]
+      id: `VEH-${1000 + i}`, owner: `Owner ${i + 1}`, houseId: `A-${101 + i}`, type: i % 2 === 0 ? 'Car' : 'Two-Wheeler', number: `KA-0${i}-XY-123${i}`, makeModel: i % 2 === 0 ? 'Honda City' : 'Activa', phase: i < 6 ? 'p1' : 'p2', sector: 's2', date: new Date().toISOString().split('T')[0]
     }));
 
     const dummyCommittee = Array.from({ length: 10 }, (_, i) => ({
-      id: `COM-${101 + i}`, name: `Committee Member ${i + 1}`, role: i === 0 ? 'President' : (i === 1 ? 'Secretary' : 'Member'), contact: `998877665${i}`, phase: i < 5 ? 'p1' : 'p2', sector: ''
+      id: `COM-${101 + i}`, name: `Committee Member ${i + 1}`, role: i === 0 ? 'President' : (i === 1 ? 'Secretary' : 'Member'), contact: `998877665${i}`, phase: i < 5 ? 'p1' : 'p2', sector: 's2'
     }));
 
     const dummyServiceProviders = [
@@ -92,8 +94,8 @@ const initializeDb = () => {
     localStorage.setItem('dashboardStats', JSON.stringify({}));
     const dummyUsers = Array.from({ length: 25 }, (_, i) => ({
       id: `USR-${101 + i}`,
-      name: `User ${i + 1}`,
-      role: i < 2 ? 'Volunteer' : (i < 12 ? 'Guard' : 'Community Member'),
+      name: indianNames[(i + 15) % indianNames.length], // shifted index so it differs slightly from payments
+      role: i < 2 ? 'Volunteer' : (i < 12 ? 'Guard' : 'Resident'),
       phase: i % 2 === 0 ? 'p1' : 'p2',
       sector: 's2',
       contact: `987654321${i}`,
@@ -101,7 +103,7 @@ const initializeDb = () => {
     }));
 
     localStorage.setItem('users', JSON.stringify(dummyUsers));
-    localStorage.setItem('Transparency_demo_v11_initialized', 'true');
+    localStorage.setItem('Transparency_demo_v17_initialized', 'true');
   }
 };
 

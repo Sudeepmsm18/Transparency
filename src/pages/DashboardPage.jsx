@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Car, ShieldAlert, VideoOff, 
-  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench 
+  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench, Footprints 
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
@@ -60,6 +60,7 @@ export function DashboardPage() {
     { title: "Savings", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
     { title: "Volunteers", value: stats.totalVolunteers, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/volunteers" },
     { title: "Services", value: stats.totalServices, icon: Wrench, color: "text-cyan-600", bg: "bg-cyan-100", link: "/services" },
+    { title: "Patrol Rounds", value: `${stats.patrolsCompleted} / ${stats.totalPatrols}`, icon: Footprints, color: "text-indigo-600", bg: "bg-indigo-100", link: "/patrols" },
     { title: "Visitors Today", value: stats.visitorsToday, icon: Users, color: "text-gray-600", bg: "bg-gray-100", link: "/visitors" },
     { title: "Street Lights", value: stats.streetLightsCount, icon: Lightbulb, color: "text-yellow-600", bg: "bg-yellow-100", link: "/infrastructure" },
   ];

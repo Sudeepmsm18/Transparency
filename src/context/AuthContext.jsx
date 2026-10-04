@@ -5,7 +5,7 @@ const AuthContext = createContext();
 export const ROLES = {
   VOLUNTEER: "Volunteer",
   GUARD: "Security Guard",
-  RESIDENT: "Community Member"
+  RESIDENT: "Resident"
 };
 
 export const AuthProvider = ({ children }) => {

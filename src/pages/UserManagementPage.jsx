@@ -13,7 +13,7 @@ export function UserManagementPage() {
   const [usersList, setUsersList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roleFilter, setRoleFilter] = useState("All");
-  const [formData, setFormData] = useState({ name: '', role: 'Community Member', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
+  const [formData, setFormData] = useState({ name: '', role: 'Resident', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
   const { role, phase, sector } = useAuth();
   const { addToast } = useToast();
   
@@ -30,7 +30,7 @@ export function UserManagementPage() {
     setUsersList(localDb.getUsers());
     setIsModalOpen(false);
     addToast(`User ${formData.name} added as ${formData.role}.`, 'success');
-    setFormData({ name: '', role: 'Community Member', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
+    setFormData({ name: '', role: 'Resident', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
   };
 
   const handlePhotoUpload = (e) => {
@@ -67,7 +67,7 @@ export function UserManagementPage() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-          <p className="text-gray-500 mt-1">Manage volunteers and community members</p>
+          <p className="text-gray-500 mt-1">Manage volunteers and residents</p>
         </div>
         <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add User</Button>
       </div>
@@ -82,7 +82,7 @@ export function UserManagementPage() {
               onChange={(e) => setRoleFilter(e.target.value)}
             >
               <option value="All">All Roles</option>
-              <option value="Community Member">Community Member</option>
+              <option value="Resident">Resident</option>
               <option value="Volunteer">Volunteer</option>
               <option value="Guard">Guard</option>
             </select>
@@ -149,7 +149,7 @@ export function UserManagementPage() {
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Role *</label>
             <select className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-              <option value="Community Member">Community Member</option>
+              <option value="Resident">Resident</option>
               <option value="Volunteer">Volunteer</option>
               <option value="Guard">Guard</option>
             </select>

@@ -94,8 +94,15 @@ export function VisitorManagementPage() {
     }
   };
 
-  const insideCount = visitors.filter(v => v.status === "Inside").length;
-  const exitedCount = visitors.filter(v => v.status === "Exited").length;
+  const phaseSectorVisitors = visitors.filter((v) => {
+    const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
+    const matchesSector = sector === "All" || !v.sector || v.sector === sector;
+    return matchesPhase && matchesSector;
+  });
+
+  const insideCount = phaseSectorVisitors.filter(v => v.status === "Inside").length;
+  const exitedCount = phaseSectorVisitors.filter(v => v.status === "Exited").length;
+  const totalVisitorsCount = phaseSectorVisitors.length;
 
   return (
     <div className="space-y-6">
@@ -120,7 +127,7 @@ export function VisitorManagementPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500 font-medium">Total Visitors</p>
-              <h3 className="text-2xl font-bold text-gray-900">{visitors.length}</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{totalVisitorsCount}</h3>
             </div>
           </CardContent>
         </Card>
