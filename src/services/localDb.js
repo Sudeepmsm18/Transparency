@@ -11,7 +11,7 @@ const defaultPhases = [
 ];
 
 const initializeDb = () => {
-  if (!localStorage.getItem('Transparency_demo_v17_initialized')) {
+  if (!localStorage.getItem('Transparency_demo_v18_initialized')) {
     localStorage.setItem('phases', JSON.stringify(defaultPhases));
 
     // Add some dummy data so dashboard isn't completely empty
@@ -92,18 +92,22 @@ const initializeDb = () => {
     localStorage.setItem('closedHouses', JSON.stringify([]));
     localStorage.setItem('businesses', JSON.stringify([]));
     localStorage.setItem('dashboardStats', JSON.stringify({}));
-    const dummyUsers = Array.from({ length: 25 }, (_, i) => ({
-      id: `USR-${101 + i}`,
-      name: indianNames[(i + 15) % indianNames.length], // shifted index so it differs slightly from payments
-      role: i < 2 ? 'Volunteer' : (i < 12 ? 'Guard' : 'Resident'),
-      phase: i % 2 === 0 ? 'p1' : 'p2',
-      sector: 's2',
-      contact: `987654321${i}`,
-      shift: (i >= 2 && i < 12) ? (i % 2 === 0 ? 'Day' : 'Night') : undefined
-    }));
+    const dummyUsers = Array.from({ length: 25 }, (_, i) => {
+      const name = indianNames[(i + 15) % indianNames.length];
+      return {
+        id: `USR-${101 + i}`,
+        name: name,
+        email: `${name.split(' ')[0].toLowerCase()}@example.com`,
+        role: i < 2 ? 'Volunteer' : (i < 12 ? 'Guard' : 'Resident'),
+        phase: i % 2 === 0 ? 'p1' : 'p2',
+        sector: 's2',
+        contact: `987654321${i}`,
+        shift: (i >= 2 && i < 12) ? (i % 2 === 0 ? 'Day' : 'Night') : undefined
+      };
+    });
 
     localStorage.setItem('users', JSON.stringify(dummyUsers));
-    localStorage.setItem('Transparency_demo_v17_initialized', 'true');
+    localStorage.setItem('Transparency_demo_v18_initialized', 'true');
   }
 };
 

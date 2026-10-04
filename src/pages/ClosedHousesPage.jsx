@@ -6,14 +6,14 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Download, Home, Lock } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 import { useToast } from "../context/ToastContext";
 
 export function ClosedHousesPage() {
   const [closedHouses, setClosedHouses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ purpose: '', fromDate: '', toDate: '', emergencyContact: '' });
-  const { role, phase, sector } = useAuth();
+  const { role, phase } = useAuth();
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export function ClosedHousesPage() {
             <tr className="bg-gray-50 border-y border-gray-200">
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">House & Owner</th>
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Absence Period</th>
-              <th className="py-3 px-6 text-xs text-gray-500 uppercase">Phase / Sector</th>
+              <th className="py-3 px-6 text-xs text-gray-500 uppercase">Phase</th>
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Purpose</th>
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Emergency Contact</th>
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Status</th>
@@ -96,7 +96,7 @@ export function ClosedHousesPage() {
                 </td>
                 <td className="py-3 px-6 text-sm">
                   {phases.find(p => p.id === ch.phase)?.name || ch.phase}
-                  {ch.sector && ` - Sector 2`}
+                  
                 </td>
                 <td className="py-3 px-6 text-sm text-gray-600 truncate max-w-[200px]" title={ch.purpose}>
                   {ch.purpose}

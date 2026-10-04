@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
@@ -9,7 +9,7 @@ import { MessageSquare, Search, Plus, AlertTriangle, CheckCircle, Clock, ShieldA
 import { useAuth, ROLES } from "../context/AuthContext";
 
 export function SecurityPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [issues, setIssues] = useState([]);
   const [patrols, setPatrols] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +17,7 @@ export function SecurityPage() {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    category: 'Suspicious Activity', description: '', phase: 'p1', sector: '', priority: 'Medium', reportedBy: 'Admin'
+    category: 'Suspicious Activity', description: '', phase: 'p1', priority: 'Medium', reportedBy: 'Admin'
   });
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
@@ -38,7 +38,7 @@ export function SecurityPage() {
     localDb.addSecurityIssue(newIssue);
     setIssues(localDb.getSecurityIssues());
     setIsModalOpen(false);
-    setFormData({ category: 'Suspicious Activity', description: '', phase: 'p1', sector: '', priority: 'Medium', reportedBy: 'Admin' });
+    setFormData({ category: 'Suspicious Activity', description: '', phase: 'p1', priority: 'Medium', reportedBy: 'Admin' });
   };
 
   const handleUpdateStatus = (id, newStatus) => {
@@ -68,7 +68,7 @@ export function SecurityPage() {
     const matchesPriority = priorityFilter === "All" || issue.priority === priorityFilter;
     const matchesPhase = phase === "All" || issue.phase === phase;
     const matchesSector = sector === "All" || !issue.sector || issue.sector === sector;
-    return matchesSearch && matchesStatus && matchesPriority && matchesPhase && matchesSector;
+    return matchesSearch && matchesStatus && matchesPriority && matchesPhase;
   });
 
   const getStatusBadge = (status) => {
@@ -222,7 +222,7 @@ export function SecurityPage() {
                     <td className="py-4 px-6">
                       <div className="text-gray-900 font-medium">
                         {phase?.name}
-                        {issue.sector && <span className="ml-1 text-gray-500">/ {sectors.find(s => s.id === issue.sector)?.name || issue.sector}</span>}
+                        
                       </div>
                     </td>
                     <td className="py-4 px-6">
@@ -311,13 +311,7 @@ export function SecurityPage() {
               {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </div>
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          </div>
+          
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Description *</label>

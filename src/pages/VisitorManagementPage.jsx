@@ -6,11 +6,11 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Search, Plus, Users, UserCheck, UserX, Clock, Phone, Car, Home } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 import { useToast } from "../context/ToastContext";
 
 export function VisitorManagementPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [visitors, setVisitors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -19,11 +19,11 @@ export function VisitorManagementPage() {
   const { addToast } = useToast();
   
   const [formData, setFormData] = useState({
-    name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: ''
+    name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1'
   });
 
   const [preapproveData, setPreapproveData] = useState({
-    name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1', sector: ''
+    name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1'
   });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function VisitorManagementPage() {
     // Trigger WhatsApp notification popup
     addToast(`WhatsApp notification sent to Host (${formData.hostHouse}) regarding arrival of ${formData.name}.`, 'whatsapp');
 
-    setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1', sector: '' });
+    setFormData({ name: '', mobile: '', hostHouse: '', purpose: 'Guest', vehicleNumber: '', gate: 'Main gate', phase: 'p1' });
   };
 
   const handlePreapproveVisitor = (e) => {
@@ -63,7 +63,7 @@ export function VisitorManagementPage() {
     
     addToast(`Pass generated for ${preapproveData.name} and sent to mobile.`, 'success');
 
-    setPreapproveData({ name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1', sector: '' });
+    setPreapproveData({ name: '', mobile: '', hostHouse: '', expectedDate: '', expectedTime: '', purpose: 'Guest', phase: 'p1' });
   };
 
   const handleMarkExit = (id) => {
@@ -81,7 +81,7 @@ export function VisitorManagementPage() {
     const matchesStatus = statusFilter === "All" || v.status === statusFilter;
     const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
     const matchesSector = sector === "All" || !v.sector || v.sector === sector;
-    return matchesSearch && matchesStatus && matchesPhase && matchesSector;
+    return matchesSearch && matchesStatus && matchesPhase;
   });
 
   const getStatusBadge = (status) => {
@@ -97,7 +97,7 @@ export function VisitorManagementPage() {
   const phaseSectorVisitors = visitors.filter((v) => {
     const matchesPhase = phase === "All" || v.phase === phase || !v.phase;
     const matchesSector = sector === "All" || !v.sector || v.sector === sector;
-    return matchesPhase && matchesSector;
+    return matchesPhase;
   });
 
   const insideCount = phaseSectorVisitors.filter(v => v.status === "Inside").length;
@@ -279,13 +279,7 @@ export function VisitorManagementPage() {
               </select>
           </div>
 
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-            </div>
+          
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -345,13 +339,7 @@ export function VisitorManagementPage() {
               </select>
             </div>
           </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={preapproveData.sector || ''} onChange={e => setPreapproveData({...preapproveData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          </div>
+          
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Expected Date</label>

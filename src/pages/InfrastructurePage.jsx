@@ -6,13 +6,13 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Activity, Settings, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function InfrastructurePage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', type: 'Water Pump', location: '', phase: 'p1', sector: '' });
+  const [formData, setFormData] = useState({ name: '', type: 'Water Pump', location: '', phase: 'p1' });
 
   useEffect(() => {
     setItems(localDb.getInfrastructure());
@@ -23,7 +23,7 @@ export function InfrastructurePage() {
     localDb.addInfrastructure({ ...formData, status: 'Working' });
     setItems(localDb.getInfrastructure());
     setIsModalOpen(false);
-    setFormData({ name: '', type: 'Water Pump', location: '', phase: 'p1', sector: '' });
+    setFormData({ name: '', type: 'Water Pump', location: '', phase: 'p1' });
   };
 
   const filteredItems = items.filter(item => phase === 'All' || item.phase === phase || !item.phase);
@@ -115,14 +115,8 @@ export function InfrastructurePage() {
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+          
+          
           <input required placeholder="Location" className="w-full border rounded p-2" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} />
           <div className="flex justify-end space-x-2 pt-4">
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancel</Button>

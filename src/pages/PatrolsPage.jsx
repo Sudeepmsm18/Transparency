@@ -6,10 +6,10 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function PatrolsPage() {
-  const { phase, sector } = useAuth();
+  const { phase } = useAuth();
   const [patrols, setPatrols] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -19,7 +19,7 @@ export function PatrolsPage() {
   const defaultTime = now.toTimeString().slice(0, 5);
   const oneHourLater = new Date(now.getTime() + 60*60*1000).toTimeString().slice(0, 5);
 
-  const [formData, setFormData] = useState({ guard: '', route: '', status: 'Completed', notes: '', date: defaultDate, startTime: defaultTime, endTime: oneHourLater, phase: 'p1', sector: '' });
+  const [formData, setFormData] = useState({ guard: '', route: '', status: 'Completed', notes: '', date: defaultDate, startTime: defaultTime, endTime: oneHourLater, phase: 'p1' });
 
   useEffect(() => {
     setPatrols(localDb.getPatrols());
@@ -34,7 +34,7 @@ export function PatrolsPage() {
     const now = new Date();
     const defaultTime = now.toTimeString().slice(0, 5);
     const oneHourLater = new Date(now.getTime() + 60*60*1000).toTimeString().slice(0, 5);
-    setFormData({ guard: '', route: '', status: 'Completed', notes: '', date: now.toISOString().split('T')[0], startTime: defaultTime, endTime: oneHourLater, phase: 'p1', sector: '' });
+    setFormData({ guard: '', route: '', status: 'Completed', notes: '', date: now.toISOString().split('T')[0], startTime: defaultTime, endTime: oneHourLater, phase: 'p1' });
   };
 
   const filteredPatrols = patrols.filter(p => phase === 'All' || p.phase === phase || !p.phase);
@@ -58,7 +58,7 @@ export function PatrolsPage() {
               <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time (From - To)</th>
               <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Guard</th>
               <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Route / Area</th>
-              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Phase / Sector</th>
+              <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Phase</th>
               <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
@@ -72,7 +72,7 @@ export function PatrolsPage() {
                 <td className="py-4 px-6">
                   <div className="text-gray-900 font-medium">
                     {phases.find(ph => ph.id === p.phase)?.name}
-                    {p.sector && <span className="ml-1 text-gray-500">/ {sectors.find(s => s.id === p.sector)?.name || p.sector}</span>}
+                    
                   </div>
                 </td>
                 <td className="py-3 px-6 text-sm"><Badge variant={p.status === 'Completed' ? 'success' : 'danger'}>{p.status}</Badge></td>
@@ -97,10 +97,7 @@ export function PatrolsPage() {
           <select className="w-full border rounded p-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <select className="w-full border rounded p-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+          
           <select className="w-full border rounded p-2" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
             <option>Completed</option><option>Missed / Incomplete</option>
           </select>

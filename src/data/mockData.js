@@ -5,11 +5,10 @@ export const phases = [
   { id: 'p4', name: 'Phase 4', houses: 150, residents: 450 },
   { id: 'p5', name: 'Phase 5', houses: 110, residents: 320 },
   { id: 'p6', name: 'Phase 6', houses: 90, residents: 250 },
-];
-
-export const sectors = [
   { id: 's2', name: 'Sector 2', houses: 75, residents: 200 },
 ];
+
+
 
 export const cameras = [
   { id: 'CAM-001', name: 'Sector B Exit Cam 1', phase: 'p2', location: 'Sector B Exit', type: 'Dome', status: 'Working', lastMaintenance: '2026-05-05' },

@@ -7,10 +7,10 @@ import { Modal } from "../components/common/Modal";
 import { useToast } from "../context/ToastContext";
 import { Search, Plus, IndianRupee, CreditCard, Receipt } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function PaymentsPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -18,7 +18,7 @@ export function PaymentsPage() {
   const { addToast } = useToast();
   
   const [formData, setFormData] = useState({
-    houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1', sector: ''
+    houseId: '', ownerName: '', email: '', mobileNumber: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1'
   });
 
   const [selectedProof, setSelectedProof] = useState(null);
@@ -42,7 +42,7 @@ export function PaymentsPage() {
     addToast(`Payment of ₹${formData.amount} recorded for ${formData.houseId}.`, 'success');
     addToast(`WhatsApp receipt sent to ${formData.ownerName}.`, 'whatsapp');
 
-    setFormData({ houseId: '', ownerName: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1', sector: '' });
+    setFormData({ houseId: '', ownerName: '', email: '', mobileNumber: '', amount: '', purpose: 'Maintenance Fee', status: 'Paid', method: 'UPI', proofPhoto: null, phase: 'p1' });
   };
 
   const handlePayNow = (payment) => {
@@ -155,6 +155,7 @@ export function PaymentsPage() {
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">House Owner Name</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Villa</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Paid / Unpaid</th>
                 {role !== ROLES.RESIDENT && <th className="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
@@ -174,6 +175,10 @@ export function PaymentsPage() {
                   </td>
                   <td className="py-4 px-6 text-sm text-gray-900">
                     {payment.date || '-'}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-500">
+                    <div>{payment.email || '-'}</div>
+                    <div>{payment.mobileNumber || '-'}</div>
                   </td>
                   <td className="py-4 px-6 font-medium text-gray-900">
                     ₹{Number(payment.amount).toLocaleString()}
@@ -217,7 +222,7 @@ export function PaymentsPage() {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">House ID *</label>
+                <label className="text-sm font-medium text-gray-700">Villa Number *</label>
                 <input required type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.houseId} onChange={e => setFormData({...formData, houseId: e.target.value})} placeholder="e.g. P1-104" />
               </div>
               <div className="space-y-1">
@@ -226,6 +231,17 @@ export function PaymentsPage() {
               </div>
             </div>
           )}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <input type="email" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="example@email.com" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">Mobile Number</label>
+              <input type="tel" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.mobileNumber} onChange={e => setFormData({...formData, mobileNumber: e.target.value})} placeholder="+91 xxxxxxxxxx" />
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Amount (₹) *</label>
@@ -251,13 +267,6 @@ export function PaymentsPage() {
             <label className="text-sm font-medium text-gray-700">Phase *</label>
             <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
               {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
 

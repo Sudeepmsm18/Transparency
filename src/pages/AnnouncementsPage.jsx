@@ -13,7 +13,7 @@ export function AnnouncementsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
-  const { role, phase, sector } = useAuth();
+  const { role, phase } = useAuth();
   
   const [formData, setFormData] = useState({
     title: '', content: '', target: 'All Residents', priority: 'Normal'

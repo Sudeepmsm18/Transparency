@@ -6,13 +6,13 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Car, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function VehiclesPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
+  const [formData, setFormData] = useState({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1' });
 
   useEffect(() => {
     setVehicles(localDb.getVehicles());
@@ -23,7 +23,7 @@ export function VehiclesPage() {
     localDb.addVehicle({ ...formData });
     setVehicles(localDb.getVehicles());
     setIsModalOpen(false);
-    setFormData({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1', sector: '' });
+    setFormData({ number: '', owner: '', type: 'Car', houseId: '', phase: 'p1' });
   };
 
   const filteredVehicles = vehicles.filter(v => phase === 'All' || v.phase === phase || !v.phase);
@@ -96,14 +96,8 @@ export function VehiclesPage() {
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+          
+          
           <select className="w-full border rounded p-2" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
             <option>Car</option><option>Two-Wheeler</option><option>Commercial</option>
           </select>

@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import { 
-  Users, Car, ShieldAlert, VideoOff, 
-  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench, Footprints 
+import {
+  Users, Car, ShieldAlert, VideoOff,
+  MapPinOff, ShieldCheck, Home, IndianRupee, Lightbulb, TrendingUp, Wrench, Footprints
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { dashboardService } from "../services/dashboardService";
 import { Badge } from "../components/common/Badge";
 import { useAuth } from "../context/AuthContext";
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell
 } from "recharts";
 
 export function DashboardPage() {
-  const { phase, sector } = useAuth();
+  const { phase } = useAuth();
   const [stats, setStats] = useState(null);
   const [recentIssues, setRecentIssues] = useState([]);
   const [recentAnnouncements, setRecentAnnouncements] = useState([]);
@@ -55,9 +55,9 @@ export function DashboardPage() {
     { title: "CCTV Faults", value: stats.camerasNotWorking, icon: VideoOff, color: "text-orange-600", bg: "bg-orange-100", link: "/cctv" },
     { title: "Active Issues", value: stats.activeSecurityIssues, icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100", link: "/security" },
     { title: "Vehicles Today", value: stats.vehiclesToday, icon: Car, color: "text-indigo-600", bg: "bg-indigo-100", link: "/vehicles" },
-    { title: "Amount Collected", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
+    { title: "Association mentainance Amount", value: `₹${stats.totalCollected.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-600", bg: "bg-emerald-100", link: "/payments" },
     { title: "Expenses", value: `₹${stats.totalExpenses.toLocaleString()}`, icon: IndianRupee, color: "text-red-600", bg: "bg-red-100", link: "/expenses" },
-    { title: "Savings", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
+    { title: "Balance", value: `₹${stats.savingsAmount.toLocaleString()}`, icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-100", link: "/reports" },
     { title: "Volunteers", value: stats.totalVolunteers, icon: Users, color: "text-blue-600", bg: "bg-blue-100", link: "/volunteers" },
     { title: "Services", value: stats.totalServices, icon: Wrench, color: "text-cyan-600", bg: "bg-cyan-100", link: "/services" },
     { title: "Patrol Rounds", value: `${stats.patrolsCompleted} / ${stats.totalPatrols}`, icon: Footprints, color: "text-indigo-600", bg: "bg-indigo-100", link: "/patrols" },
@@ -155,7 +155,7 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -165,7 +165,7 @@ export function DashboardPage() {
           <CardContent className="p-0">
             <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
               {recentIssues.length === 0 ? (
-                 <div className="p-4 text-center text-gray-500 text-sm">No recent issues found.</div>
+                <div className="p-4 text-center text-gray-500 text-sm">No recent issues found.</div>
               ) : (
                 recentIssues.map(issue => (
                   <div key={issue.id} className="p-4 hover:bg-gray-50 transition-colors">
@@ -182,7 +182,7 @@ export function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Important Announcements</CardTitle>
@@ -190,7 +190,7 @@ export function DashboardPage() {
           <CardContent className="p-0">
             <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
               {recentAnnouncements.length === 0 ? (
-                 <div className="p-4 text-center text-gray-500 text-sm">No recent announcements.</div>
+                <div className="p-4 text-center text-gray-500 text-sm">No recent announcements.</div>
               ) : (
                 recentAnnouncements.map(ann => (
                   <div key={ann.id} className={`p-4 border-l-4 hover:bg-gray-50 transition-colors ${ann.priority === 'High' ? 'border-red-500 bg-red-50/50' : 'border-blue-500'}`}>

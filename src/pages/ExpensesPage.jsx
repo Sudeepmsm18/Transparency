@@ -6,16 +6,16 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Search, Plus, Wallet, FileText, TrendingDown, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function ExpensesPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [formData, setFormData] = useState({
-    title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1', sector: ''
+    title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1'
   });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function ExpensesPage() {
     localDb.addExpense(newExpense);
     setExpenses(localDb.getExpenses());
     setIsModalOpen(false);
-    setFormData({ title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1', sector: '' });
+    setFormData({ title: '', category: 'Maintenance', amount: '', vendor: '', status: 'Paid', phase: 'p1' });
   };
 
   const getStatusBadge = (status) => {
@@ -170,13 +170,7 @@ export function ExpensesPage() {
               </select>
           </div>
 
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-            </div>
+          
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">

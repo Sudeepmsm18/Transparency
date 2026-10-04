@@ -7,7 +7,7 @@ import { User } from "lucide-react";
 
 export function VolunteersPage() {
   const [volunteers, setVolunteers] = useState([]);
-  const { phase, sector } = useAuth();
+  const { phase } = useAuth();
 
   useEffect(() => {
     const allUsers = localDb.getUsers();
@@ -33,7 +33,7 @@ export function VolunteersPage() {
           <thead>
             <tr className="bg-gray-50 border-y border-gray-200">
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Name</th>
-              <th className="py-3 px-6 text-xs text-gray-500 uppercase">Phase / Sector</th>
+              <th className="py-3 px-6 text-xs text-gray-500 uppercase">Phase</th>
               <th className="py-3 px-6 text-xs text-gray-500 uppercase">Contact Number</th>
             </tr>
           </thead>
@@ -54,7 +54,7 @@ export function VolunteersPage() {
                 </td>
                 <td className="py-3 px-6 text-sm">
                   {phases.find(p => p.id === volunteer.phase)?.name || volunteer.phase}
-                  {volunteer.sector && ` - Sector 2`}
+                  
                 </td>
                 <td className="py-3 px-6 text-sm">{volunteer.contact}</td>
               </tr>

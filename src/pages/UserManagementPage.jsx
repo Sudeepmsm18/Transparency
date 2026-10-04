@@ -6,15 +6,15 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Trash2, Users } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 import { useToast } from "../context/ToastContext";
 
 export function UserManagementPage() {
   const [usersList, setUsersList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roleFilter, setRoleFilter] = useState("All");
-  const [formData, setFormData] = useState({ name: '', role: 'Resident', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
-  const { role, phase, sector } = useAuth();
+  const [formData, setFormData] = useState({ name: '', role: 'Resident', email: '', contact: '', phase: 'p1', shift: 'Day', photo: '' });
+  const { role, phase } = useAuth();
   const { addToast } = useToast();
   
   // Only Super Admin can view/add users
@@ -30,7 +30,7 @@ export function UserManagementPage() {
     setUsersList(localDb.getUsers());
     setIsModalOpen(false);
     addToast(`User ${formData.name} added as ${formData.role}.`, 'success');
-    setFormData({ name: '', role: 'Resident', contact: '', phase: 'p1', sector: '', shift: 'Day', photo: '' });
+    setFormData({ name: '', role: 'Resident', email: '', contact: '', phase: 'p1', shift: 'Day', photo: '' });
   };
 
   const handlePhotoUpload = (e) => {
@@ -93,8 +93,9 @@ export function UserManagementPage() {
             <tr className="bg-gray-50 border-y border-gray-200">
               <th className="py-3 px-6 text-xs text-gray-500">Name</th>
               <th className="py-3 px-6 text-xs text-gray-500">Role</th>
-              <th className="py-3 px-6 text-xs text-gray-500">Phase & Sector</th>
-              <th className="py-3 px-6 text-xs text-gray-500">Contact</th>
+              <th className="py-3 px-6 text-xs text-gray-500">Phase</th>
+              <th className="py-3 px-6 text-xs text-gray-500">Email ID</th>
+              <th className="py-3 px-6 text-xs text-gray-500">Mobile Number</th>
               <th className="py-3 px-6 text-xs text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
@@ -121,8 +122,9 @@ export function UserManagementPage() {
                 </td>
                 <td className="py-3 px-6 text-sm">
                   {phases.find(p => p.id === u.phase)?.name || u.phase}
-                  {u.sector && ` - ${sectors.find(s => s.id === u.sector)?.name || u.sector}`}
+                  
                 </td>
+                <td className="py-3 px-6 text-sm">{u.email || '-'}</td>
                 <td className="py-3 px-6 text-sm">{u.contact}</td>
                 <td className="py-3 px-6 text-right">
                   <button 
@@ -135,7 +137,7 @@ export function UserManagementPage() {
                 </td>
               </tr>
             ))}
-            {filteredUsers.length === 0 && <tr><td colSpan="5" className="text-center py-6 text-gray-500">No users found for this phase.</td></tr>}
+            {filteredUsers.length === 0 && <tr><td colSpan="6" className="text-center py-6 text-gray-500">No users found for this phase.</td></tr>}
           </tbody>
         </table>
       </Card>
@@ -164,28 +166,19 @@ export function UserManagementPage() {
               </select>
             </div>
           )}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Phase *</label>
-              <select className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
-                {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-              <select className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-                <option value="">None / All Sectors</option>
-                {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>
-            </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Phase *</label>
+            <select className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
+              {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Email *</label>
+            <input required type="email" className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="example@email.com" />
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Contact Number *</label>
-            <input required className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} placeholder="Mobile number" />
+            <input required type="tel" className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} placeholder="Mobile number" />
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Profile Photo</label>

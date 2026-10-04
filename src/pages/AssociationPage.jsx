@@ -6,13 +6,13 @@ import { Button } from "../components/common/Button";
 import { Modal } from "../components/common/Modal";
 import { Plus, Users, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 
 export function AssociationPage() {
   const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
-  const { phase, sector, role } = useAuth();
+  const [formData, setFormData] = useState({ name: '', role: 'President', contact: '', phase: 'p1' });
+  const { phase, role } = useAuth();
 
   useEffect(() => {
     setMembers(localDb.getCommittee());
@@ -23,7 +23,7 @@ export function AssociationPage() {
     localDb.addCommitteeMember(formData);
     setMembers(localDb.getCommittee());
     setIsModalOpen(false);
-    setFormData({ name: '', role: 'President', contact: '', phase: 'p1', sector: '' });
+    setFormData({ name: '', role: 'President', contact: '', phase: 'p1' });
   };
 
   const filteredMembers = members.filter(m => phase === 'All' || m.phase === phase || !m.phase);
@@ -83,14 +83,8 @@ export function AssociationPage() {
           <select className="w-full border rounded p-2" value={formData.phase} onChange={e => setFormData({...formData, phase: e.target.value})}>
             {phases.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <select className="w-full border rounded p-2 mt-4" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-            <option value="">None / All Sectors</option>
-            {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+          
+          
           <input required placeholder="Contact info" className="w-full border rounded p-2" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} />
           <div className="flex justify-end space-x-2 pt-4">
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancel</Button>

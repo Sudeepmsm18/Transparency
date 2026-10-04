@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { localDb } from "../services/localDb";
-import { phases, sectors } from "../data/mockData";
+import { phases } from "../data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
@@ -9,13 +9,13 @@ import { Search, Plus, Video, Settings, Activity, Trash2 } from "lucide-react";
 import { useAuth, ROLES } from "../context/AuthContext";
 
 export function CctvManagementPage() {
-  const { phase, sector, role } = useAuth();
+  const { phase, role } = useAuth();
   const [cameras, setCameras] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', phase: 'p1', sector: '', location: '', type: 'Bullet'
+    name: '', phase: 'p1', location: '', type: 'Bullet'
   });
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function CctvManagementPage() {
     localDb.addCamera(newCamera);
     setCameras(localDb.getCameras());
     setIsModalOpen(false);
-    setFormData({ name: '', phase: 'p1', sector: '', location: '', type: 'Bullet' });
+    setFormData({ name: '', phase: 'p1', location: '', type: 'Bullet' });
   };
 
   const handleUpdateStatus = (id, newStatus) => {
@@ -53,7 +53,7 @@ export function CctvManagementPage() {
     const matchesStatus = statusFilter === "All" || cam.status === statusFilter;
     const matchesPhase = phase === "All" || cam.phase === phase;
     const matchesSector = sector === "All" || !cam.sector || cam.sector === sector;
-    return matchesSearch && matchesStatus && matchesPhase && matchesSector;
+    return matchesSearch && matchesStatus && matchesPhase;
   });
 
   const getStatusBadge = (status) => {
@@ -234,13 +234,7 @@ export function CctvManagementPage() {
               </select>
           </div>
 
-          <div className="space-y-1 mt-4">
-            <label className="text-sm font-medium text-gray-700">Sector (Optional)</label>
-            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.sector || ''} onChange={e => setFormData({...formData, sector: e.target.value})}>
-              <option value="">None / All Sectors</option>
-              {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-            </div>
+          
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Camera Type *</label>
               <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
